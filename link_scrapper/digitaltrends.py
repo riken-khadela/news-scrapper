@@ -22,7 +22,7 @@ logging.basicConfig(
 def get_google_search_results(search_term = "Funding & Investment", country_code='US'):
     try:
         headers = {"User-Agent": UserAgent().random}
-        query = f"{"Retail"} site:digitaltrends.com"
+        query = f"{search_term} site:digitaltrends.com"
         params = {
             "q": query,
             "tbs": "qdr:d",  
