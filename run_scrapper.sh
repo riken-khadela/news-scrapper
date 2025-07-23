@@ -6,6 +6,13 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Use Python from env (e.g., ./env/bin/python)
 PYTHON="$ROOT_DIR/env/bin/python"
 
+if [ "$1" = "stop" ]; then
+    echo "Stopping running scrappers..."
+    pkill -f "link_scrapper.main"
+    pkill -f "news_scrapper.main"
+    exit 0
+fi
+
 # Activate virtual environment if needed
 if [ ! -x "$PYTHON" ]; then
     echo "Python environment not found at: $PYTHON"

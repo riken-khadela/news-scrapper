@@ -20,11 +20,11 @@ TOKEN = "50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269"
 
 logger_file = os.path.join(os.getcwd(),'log','theverge.log')
 
-logging.basicConfig(
-    filename=cf.check_log_file(logger_file),
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s'
-)
+# logging.basicConfig(
+#     filename=cf.check_log_file(logger_file),
+#     level=print,
+#     format='%(asctime)s [%(levelname)s] %(message)s'
+# )
 
 
 def get_google_search_results(search_term = "Funding & Investment", country_code='US'):
@@ -32,20 +32,18 @@ def get_google_search_results(search_term = "Funding & Investment", country_code
         headers = {"User-Agent": UserAgent().random}
         query = f"{search_term} site:theverge.com"
         params = {
-            "q": query,
-            "tbs": "qdr:d",  
+            "q": query, "tbs": "qdr:w", 
         }
 
         search_url = f"https://www.google.com/search?{urllib.parse.urlencode(params)}"
 
         response = requests.get(search_url, headers=headers, timeout=10, proxies=cf.proxies())
         if response.status_code == 200:
-            logging.info("Fetched results for: %s", search_term)
+            print("Fetched results for: %s", search_term)
             return response.text
-        else:
-            logging.warning("Failed to fetch search results: HTTP %s", response.status_code)
+        
     except Exception as e:
-        logging.error("Exception during Google Search fetch: %s", str(e))
+        print("Exception during Google Search fetch: %s", str(e))
     return None
 
 
@@ -54,9 +52,9 @@ def parse_google_results(html, key_data, tag, search_term):
     soup = BeautifulSoup(html, 'lxml')
     extracted_links = []
     index = 0
-
+    
     # Find all Google result anchors by their class
-    anchor_tags = soup.find_all("a", class_="zReHs")
+    anchor_tags = soup.find_all("a")
     for a_tag in anchor_tags:
         
         href = a_tag.get("href")
@@ -64,6 +62,12 @@ def parse_google_results(html, key_data, tag, search_term):
             continue
         elif href == "https://www.theverge.com/" or "https://www.theverge.com/latest/" in href:
             continue
+        elif href.startswith("/url?q") or href.startswith("/search?"):
+            continue
+        elif not "theverge.com" in href:
+            continue
+        
+        
         
         index += 1
         title_element = a_tag.find("h3")
@@ -85,8 +89,8 @@ def parse_google_results(html, key_data, tag, search_term):
         }
 
         extracted_links.append(obj)
-        logging.info("Collected URL: %s", href)
-    logging.info("Completed parsing results for: %s", search_term)
+        print("Collected URL: %s", href)
+    print("Completed parsing results for: %s", search_term)
     return extracted_links
 
 
@@ -98,7 +102,5 @@ def collect_page_details(sector, keywords, geo_locations = ['US']):
         if html:
             data = parse_google_results(html, sector, keywords, search_term)
             time.sleep(2)
-        else:
-            logging.warning("No HTML returned for: %s", search_term)
     
     return data

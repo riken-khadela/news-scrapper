@@ -1,7 +1,7 @@
 import requests
 import urllib.parse
 import datetime
-import logging
+# import logging
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 import time
@@ -9,11 +9,11 @@ import link_scrapper.settings as cf
 
 TOKEN = "50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269"
 
-logging.basicConfig(
-    filename='/home/user1/startups/news_scrapper/link_scrapper/logs/tech_crunch.log',
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s'
-)
+# print(
+#     filename='/home/user1/startups/news_scrapper/link_scrapper/logs/tech_crunch.log',
+#     level=print,
+#     format='%(asctime)s [%(levelname)s] %(message)s'
+# )
 
 
 def get_google_search_results(search_term = "Funding & Investment", country_code='US'):
@@ -21,20 +21,19 @@ def get_google_search_results(search_term = "Funding & Investment", country_code
         headers = {"User-Agent": UserAgent().random}
         query = f"{search_term} site:crunchbase.com"
         params = {
-            "q": query,
-            "tbs": "qdr:d",  
+            "q": query, "tbs": "qdr:w", 
+             
         }
 
         search_url = f"https://www.google.com/search?{urllib.parse.urlencode(params)}"
 
         response = requests.get(search_url, headers=headers, timeout=10, proxies=cf.proxies())
         if response.status_code == 200:
-            logging.info("Fetched results for: %s", search_term)
+            print("Fetched results for: %s", search_term)
             return response.text
-        else:
-            logging.warning("Failed to fetch search results: HTTP %s", response.status_code)
+        
     except Exception as e:
-        logging.error("Exception during Google Search fetch: %s", str(e))
+        print("Exception during Google Search fetch: %s", str(e))
     return None
 
 
@@ -43,10 +42,9 @@ def parse_google_results(html, key_data, tag, search_term):
     soup = BeautifulSoup(html, 'lxml')
     extracted_links = []
     index = 0
-    exclude_domains = cf.get_exclude_domains()
     
-    anchor_tags = soup.find_all("a", class_="zReHs")
-    print(len(anchor_tags))
+    anchor_tags = soup.find_all("a")
+    
     for a_tag in anchor_tags:
         skip_links = [
             "https://techcrunch.com/latest/",
@@ -58,12 +56,13 @@ def parse_google_results(html, key_data, tag, search_term):
             continue
         elif href == "https://techcrunch.com/" or href in skip_links or href in skip_links:
             continue
-        
-        exclude_match = any(excl.lower() in href.lower() for excl in exclude_domains)
-        if exclude_match:
+        elif href.startswith("/url?q") or href.startswith("/search?"):
             continue
-
+        elif not "techcrunch.com" in href:
+            continue
+        
         index += 1
+        print("Processing URL: %s", href)
         title_element = a_tag.find("h3")
         title = title_element.get_text(strip=True) if title_element else "No Title Found"
 
@@ -83,9 +82,9 @@ def parse_google_results(html, key_data, tag, search_term):
         }
 
         extracted_links.append(obj)
-        logging.info("Collected URL: %s", href)
+        print("Collected URL: %s", href)
 
-    logging.info("Completed parsing results for: %s", search_term)
+    print("Completed parsing results for: %s", search_term)
     return extracted_links
 
 def collect_page_details(sector, keywords, geo_locations = ['US']):
@@ -96,7 +95,5 @@ def collect_page_details(sector, keywords, geo_locations = ['US']):
         if html:
             data = parse_google_results(html, sector, keywords, search_term)
             time.sleep(2)
-        else:
-            logging.warning("No HTML returned for: %s", search_term)
     
     return data

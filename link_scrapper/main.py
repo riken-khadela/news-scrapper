@@ -102,7 +102,7 @@ def main():
     all_urls = []
     for keyword in KEYWORDS :
         for sector in get_sector_data() :
-
+            print('searching for :',sector, '+', keyword)
             tech_crunch_ = tech_crunch.collect_page_details(sector, keyword, LOCATION)
             if tech_crunch_ :
                 all_urls.extend(tech_crunch_)
@@ -122,8 +122,10 @@ def main():
             your_story_ = your_story.collect_page_details(sector, keyword, LOCATION)
             if your_story_ :
                 all_urls.extend(your_story_)
-            
+            all_urls = [ i for i in all_urls if not "translate.google.com" in i['url'] ]
             if all_urls :
+                for i in all_urls : i['url']
+                breakpoint()
                 insert_multiple_urls_from_google(all_urls)
                 all_urls = []
         
@@ -138,7 +140,7 @@ if __name__ == "__main__":
             inc42_ = digitaltrends.collect_page_details(sector, "", LOCATION)
             # inc42_ = inc42(sector, keyword, LOCATION)
             if inc42_ :
-                breakpoint()
+                
             # if inc42_ :
             #     all_urls.extend(inc42_)
             # """

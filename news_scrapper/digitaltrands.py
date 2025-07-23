@@ -10,30 +10,33 @@ TOKEN = "50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269"
 
 logger_file = os.path.join(os.getcwd(),'log','digital_trends.log')
 
-logging.basicConfig(
-    filename=cf.check_log_file(logger_file),
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s'
-)
+# logging.basicConfig(
+#     filename=cf.check_log_file(logger_file),
+#     level=print,
+#     format='%(asctime)s [%(levelname)s] %(message)s'
+# )
 
 def get_request(url):
     c = 0
-    logging.info('Searching for: %s', url)
+    print('Searching for: %s', url)
 
     while c < 10:
         try:
             res = requests.get(url, proxies=cf.proxies())
-            logging.info('URL: %s', res.url)
-            logging.info('*' * 100)
+            print('URL: %s', res.url)
+            print('*' * 100)
 
             if res.status_code == 200:
                 return True, res
+            else :
+                print("-"*20,"digital trends")
+                breakpoint()
         except requests.Timeout:
-            logging.warning("Request timed out. Retrying...")
+            print("Request timed out. Retrying...")
         except requests.RequestException as e:
-            logging.error("Request failed: %s", e)
+            print("Request failed: %s", e)
 
-        logging.info("Checking try again: %d", c)
+        print("Checking try again: %d", c)
         time.sleep(0.5)
         c += 1
 
@@ -177,11 +180,12 @@ def scrape(url):
 
         main_div = data.find('div',{'id' : 'h-maincontent'})
         image = ""
-        for  i in main_div.find_all('img') : 
-            src_ = i.get('src')
-            if src_ :
-                if src_.startswith('https://www.digitaltrends.com') :
-                    image = src_
+        if main_div:
+            for  i in main_div.find_all('img') : 
+                src_ = i.get('src')
+                if src_ :
+                    if src_.startswith('https://www.digitaltrends.com') :
+                        image = src_
 
         try:
             author = get_author(res, data_dict)
@@ -213,7 +217,7 @@ def scrape(url):
                 print(f"Article too short or no content found. Word count: {desc_len}")
                 
         except Exception as e:
-            logging.info("Error processing URL: %s", e)
+            print("Error processing URL: %s", e)
             print(f"Error processing article: {e}")
 
         print("Scraping completed!")

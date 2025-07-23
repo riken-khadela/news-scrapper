@@ -16,11 +16,10 @@ news_scrapper_data = masterclient.NEWSSCRAPERDATA
 news_url_1 = news_scrapper_data.news_url_1
 news_details_1 = news_scrapper_data.news_details_1
 
-
-def collect_links(numberofrecords = 10):
+def collect_links(numberofrecords = 100):
     updates = []
     random_documents = []
-    where_condition = {"is_read":0}
+    where_condition = {"is_read":1}
     pipeline = [{"$match": where_condition}, {"$sample": {"size": numberofrecords}}]
     random_documents = list(news_url_1.aggregate(pipeline))
     if len(random_documents) == 0:
@@ -46,7 +45,7 @@ def format_field(value):
     return result
 
 def insert_news_details(data):
-    logging.info("Total records received: %d", len(data))
+    print("Total records received: %d", len(data))
     bulk_operations = []
     
     for obj in data:
@@ -71,10 +70,10 @@ def insert_news_details(data):
         if bulk_operations:
 
             result = news_details_1.bulk_write(bulk_operations)
-            logging.info("Total inserted records: %d", len(bulk_operations))
+            print("Total inserted records: %d", len(bulk_operations))
     except BulkWriteError as e:
         print(e.details)
-        logging.error("An error occurred: %s", e.details)
+        print("An error occurred: %s", e.details)
 
 
 def main():

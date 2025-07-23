@@ -10,29 +10,33 @@ TOKEN = "50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269"
 
 logger_file = os.path.join(os.getcwd(),'log','inc42.log')
 
-logging.basicConfig(
-    filename=cf.check_log_file(logger_file),
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s'
-)
+# logging.basicConfig(
+#     filename=cf.check_log_file(logger_file),
+#     level=print,
+#     format='%(asctime)s [%(levelname)s] %(message)s'
+# )
 def get_request(url):
     c = 0
-    logging.info('Searching for: %s', url)
+    print('Searching for: %s', url)
 
     while c < 10:
         try:
             res = requests.get(url, proxies=cf.proxies())
-            logging.info('URL: %s', res.url)
-            logging.info('*' * 100)
+            print('URL: %s', res.url)
+            print('*' * 100)
+            
 
             if res.status_code == 200:
                 return True, res
+            else :
+                print("-"*20,"inc42")
+                breakpoint()
         except requests.Timeout:
-            logging.warning("Request timed out. Retrying...")
+            print("Request timed out. Retrying...")
         except requests.RequestException as e:
-            logging.error("Request failed: %s", e)
+            print("Request failed: %s", e)
 
-        logging.info("Checking try again: %d", c)
+        print("Checking try again: %d", c)
         time.sleep(0.5)
         c += 1
 
@@ -202,18 +206,18 @@ def scrape(url) :
                     "source": "The Verge"
                 }
                 
-                logging.info("Article scraped successfully!")
-                logging.info(f"Title: {obj['title']}")
-                logging.info(f"Author: {obj['author']}")
-                logging.info(f"Word Count: {obj['word_count']}")
-                logging.info(f"Content Preview: {obj['description'][:200]}...")
+                print("Article scraped successfully!")
+                print(f"Title: {obj['title']}")
+                print(f"Author: {obj['author']}")
+                print(f"Word Count: {obj['word_count']}")
+                print(f"Content Preview: {obj['description'][:200]}...")
                 
             else:
-                logging.info(f"Article too short or no content found. Word count: {desc_len}")
+                print(f"Article too short or no content found. Word count: {desc_len}")
                 
         except Exception as e:
-            logging.ERROR("Error processing URL: %s", e)
-            logging.ERROR(f"Error processing article: {e}")
+            print("Error processing URL: %s", e)
+            print(f"Error processing article: {e}")
 
     return obj
 
