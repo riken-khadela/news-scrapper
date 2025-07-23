@@ -3,9 +3,11 @@ import your_story
 import theverge
 import digitaltrends
 import tech_crunch
-import random, pymongo, logging, re
+import random, pymongo, logging, re, time
 from pymongo import MongoClient, UpdateOne, InsertOne
 from pymongo.errors import BulkWriteError
+import settings as cf 
+from bot import get_google_search_results, parse_google_results
 
 logger = logging.getLogger(__name__)
 masterclient = MongoClient("mongodb://vinayj:7x34gkm5@65.108.33.28:27017/?authSource=TRAKINTELSCRAPER&authMechanism=SCRAM-SHA-256&readPreference=primary&directConnection=true&tls=true&tlsAllowInvalidCertificates=true")
@@ -98,30 +100,48 @@ def insert_multiple_urls_from_google(documents):
 def get_sector_data():
     return sector_collection.find()
 
+
+def collect_page_details(sector, keywords, site_name, geo_locations = ['US']):
+    logger = cf.logger(f'log/{site_name.split(".")[0]}.log')
+    data = []
+    for geo in geo_locations:
+        search_term = f"{sector['sector']} + {keywords}"
+        html = get_google_search_results(search_term, geo, 'w', logger)
+        if html:
+            data = parse_google_results(html, sector, keywords, search_term, site_name, logger)
+            time.sleep(2)
+        else:
+            logger.warning("No HTML returned for: %s", search_term)
+
+    return data
+
 def main():
     all_urls = []
     for keyword in KEYWORDS :
         for sector in get_sector_data() :
-            print('searching for :',sector, '+', keyword)
-            tech_crunch_ = tech_crunch.collect_page_details(sector, keyword, LOCATION)
+            
+            print('searching for :',sector['sector'], '+', keyword)
+            tech_crunch_ = collect_page_details(sector, keyword, "techcrunch.com", LOCATION)
             if tech_crunch_ :
                 all_urls.extend(tech_crunch_)
-
-            the_verge_ = theverge.collect_page_details(sector, keyword, LOCATION)
+                
+            the_verge_ = collect_page_details(sector, keyword, "theverge.com", LOCATION)
             if the_verge_ :
                 all_urls.extend(the_verge_)
 
-            digital_trends_ = digitaltrends.collect_page_details(sector, keyword, LOCATION)
+            digital_trends_ = collect_page_details(sector, keyword, "digitaltrends.com", LOCATION)
             if digital_trends_ :
                 all_urls.extend(digital_trends_)
-            
-            inc42_ = inc42.collect_page_details(sector, keyword, LOCATION)
+
+            inc42_ = collect_page_details(sector, keyword, "inc42.com", LOCATION)
             if inc42_ :
                 all_urls.extend(inc42_)
-            
-            your_story_ = your_story.collect_page_details(sector, keyword, LOCATION)
+
+            your_story_ = collect_page_details(sector, keyword, "yourstory.com", LOCATION)
             if your_story_ :
                 all_urls.extend(your_story_)
+            
+            
             all_urls = [ i for i in all_urls if not "translate.google.com" in i['url'] ]
             if all_urls :
                 for i in all_urls : i['url']
@@ -132,15 +152,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
-    
-    
-    """
-    print(sector, keyword)
-            inc42_ = digitaltrends.collect_page_details(sector, "", LOCATION)
-            # inc42_ = inc42(sector, keyword, LOCATION)
-            if inc42_ :
-                
-            # if inc42_ :
-            #     all_urls.extend(inc42_)
-            # """
