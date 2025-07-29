@@ -30,7 +30,6 @@ def get_request(url):
                 return True, res
             else :
                 print("-"*20,"digital trends")
-                breakpoint()
         except requests.Timeout:
             print("Request timed out. Retrying...")
         except requests.RequestException as e:

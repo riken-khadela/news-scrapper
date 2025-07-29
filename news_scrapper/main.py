@@ -50,21 +50,25 @@ def insert_news_details(data):
     
     for obj in data:
         try:
-           
-            url=obj["url"]
-            regex_pattern = f'^{re.escape(url)}$'
-            doc = news_url_1.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
-            
-            if doc:
-                append_fields = {
-                    "count": doc["count"],
-                    "google_page": doc["google_page"],
-                    "index": doc["index"],
-                    "search_tag": format_field(doc["tag"]),
-                    "search_sector": format_field(doc["sector"])  
-                }
-                obj.update(append_fields)
-            bulk_operations.append(pymongo.InsertOne(obj))
+            existing_doc = news_url_1.find_one({"url": obj["url"]})
+            if not existing_doc:
+                bulk_operations.append(pymongo.InsertOne(obj))
+                
+            if existing_doc:
+                url=obj["url"]
+                regex_pattern = f'^{re.escape(url)}$'
+                doc = news_url_1.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
+                
+                if doc:
+                    append_fields = {
+                        "count": doc["count"],
+                        "google_page": doc["google_page"],
+                        "index": doc["index"],
+                        "search_tag": format_field(doc["tag"]),
+                        "search_sector": format_field(doc["sector"])  
+                    }
+                    obj.update(append_fields)
+                bulk_operations.append(pymongo.UpdateOne(obj))
         except:continue
     try:
         if bulk_operations:
@@ -79,6 +83,7 @@ def insert_news_details(data):
 def main():
     
     data = []
+    print("Collecting links from MongoDB...",len(collect_links()))
     for link in collect_links():
         url = link['url']
         
@@ -99,6 +104,9 @@ def main():
             
     if data :
         insert_news_details(data)
+        breakpoint()
+        data = []
+        
         
 if __name__ == "__main__":
     main()

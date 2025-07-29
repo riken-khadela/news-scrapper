@@ -21,20 +21,22 @@ def get_request(url):
 
     while c < 10:
         try:
+            
+            
             res = requests.get(url, proxies=cf.proxies())
             print('URL: %s', res.url)
             print('*' * 100)
             
-
+            print(res.status_code)
             if res.status_code == 200:
                 return True, res
             else :
                 print("-"*20,"inc42")
-                breakpoint()
         except requests.Timeout:
-            print("Request timed out. Retrying...")
+            print("Request timed out. Retrying...",f": {res.status_code}")
         except requests.RequestException as e:
-            print("Request failed: %s", e)
+            print("Request failed: %s", e,)
+            
 
         print("Checking try again: %d", c)
         time.sleep(0.5)
