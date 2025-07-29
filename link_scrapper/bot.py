@@ -70,11 +70,12 @@ def get_data_from_page(html, key_data, tag, search_term, site_name, logger, inde
     extracted_links = []
     result_div = data.find('div',{'id':'results'})
     for result in result_div.find_all('div',{'class':'snippet'}) :
-        result_href = result.find('a').get('href')
-        result_title = result.find('div',{'class':'title'}).text
-        if not result_href or not result_title:
-            continue
-        href = clean_google_url(result_href)
+        if result.find('a') and result.find('div',{'class':'title'}):
+            result_href = result.find('a').get('href')
+            result_title = result.find('div',{'class':'title'}).text
+            if not result_href or not result_title:
+                continue
+            href = clean_google_url(result_href)
         if not href or site_name not in href:
             continue
         elif href == f"https://www.{site_name}/" or href == f"https://{site_name}/" or f"https://www.{site_name}/latest/" in href or f"https://{site_name}/latest/" in href:

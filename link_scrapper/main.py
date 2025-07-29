@@ -1,8 +1,3 @@
-import inc42
-import your_story
-import theverge
-import digitaltrends
-import tech_crunch
 import random, pymongo, logging, re, time
 from pymongo import MongoClient, UpdateOne, InsertOne
 from pymongo.errors import BulkWriteError
