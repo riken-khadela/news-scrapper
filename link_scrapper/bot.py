@@ -56,13 +56,15 @@ def requests_next_page(url, site_name, logger):
 
 def get_next_page_url(html):
     soup = BeautifulSoup(html, 'lxml')
-    pagination_div = soup.find('div',{'id':'pagination'})
+    pagination_div = soup.find('div', {'id': 'pagination'})
     if pagination_div:
         next_page = pagination_div.find('a')
         if next_page:
-            next_page_url = next_page.get('href')
-            print(f"Next page URL: {next_page_url}")
-            return next_page_url
+            next_page_path = next_page.get('href')
+            if next_page_path:
+                full_url = urllib.parse.urljoin("https://search.brave.com", next_page_path)
+                print(f"Next page URL: {full_url}")
+                return full_url
     return None
 
 def get_data_from_page(html, key_data, tag, search_term, site_name, logger, index=0):
@@ -85,7 +87,7 @@ def get_data_from_page(html, key_data, tag, search_term, site_name, logger, inde
         elif href.startswith("/url?q") or href.startswith("/search?q"):  
             continue
 
-        
+        print(f"Collected URL: {href}")
         index += 1
         obj = {
             "sector": key_data["sector"],
