@@ -29,23 +29,6 @@ def get_google_search_results(search_term, site_name, time='w', country_code='US
         if response.status_code == 200:
             logger.info("Fetched results for: %s", search_term)
 
-            # Save to numbered HTML file
-            folder = os.path.join("html")
-            os.makedirs(folder, exist_ok=True)
-            site_prefix = site_name.split('.')[0]
-
-            existing_files = glob.glob(os.path.join(folder, f"{site_prefix}*.html"))
-            numbers = [
-                int(os.path.splitext(os.path.basename(f))[0].replace(site_prefix, ""))
-                for f in existing_files
-                if os.path.splitext(os.path.basename(f))[0].replace(site_prefix, "").isdigit()
-            ]
-            next_index = max(numbers) + 1 if numbers else 1
-            filename = os.path.join(folder, f"{site_prefix}{next_index}.html")
-
-            with open("first.html", "w", encoding="utf-8") as f:f.write(response.text)
-            breakpoint()
-            logger.info("Saved HTML to %s", filename)
             return response.text
 
     except Exception as e:
