@@ -22,12 +22,10 @@ def get_google_search_results(search_term, site_name, time='w', country_code='US
         headers = {"User-Agent": UserAgent().random}
         query = f"{search_term} site:{site_name}"
         params = {"q": query,"tf": f"pm",}
-        # https://search.brave.com/search?q=Funding+%26+Investment+site%3Atechcrunch.com&source=desktop&tf=pd
         search_url = f"https://search.brave.com/search?{urllib.parse.urlencode(params)}"
         response = requests.get(search_url, headers=headers, timeout=10, proxies=proxies())
         
         logger.info("Response status code: %s", response.status_code)
-        breakpoint()
         if response.status_code == 200:
             logger.info("Fetched results for: %s", search_term)
 
@@ -60,39 +58,55 @@ def clean_google_url(href: str) -> str:
         href = unquote(href.split("/url?q=")[-1].split("&")[0])
     return href
 
-def parse_google_results(html, key_data, tag, search_term, site_name, logger ):
+def requests_next_page(url, site_name, logger):
+    headers = {"User-Agent": UserAgent().random}
+    try:
+        response = requests.get(url, headers=headers, timeout=10, proxies=proxies())
+        if response.status_code == 200:
+            logger.info("Fetched next page: %s", url)
+            return response.text
+        else:
+            logger.error("Failed to fetch next page. Status code: %s", response.status_code)
+    except Exception as e:
+        logger.error("Exception during next page fetch: %s", str(e))
+    return None
+
+def get_next_page_url(html):
     soup = BeautifulSoup(html, 'lxml')
+    pagination_div = soup.find('div',{'id':'pagination'})
+    if pagination_div:
+        next_page = pagination_div.find('a')
+        if next_page:
+            next_page_url = next_page.get('href')
+            print(f"Next page URL: {next_page_url}")
+            return next_page_url
+    return None
+
+def get_data_from_page(html, key_data, tag, search_term, site_name, logger, index=0):
+    data = BeautifulSoup(html, 'lxml')
     extracted_links = []
-    index = 0
-    breakpoint()
-    anchor_tags = soup.find_all("a")
-    for a_tag in anchor_tags:
-        if not a_tag.get("href"):
+    result_div = data.find('div',{'id':'results'})
+    for result in result_div.find_all('div',{'class':'snippet'}) :
+        result_href = result.find('a').get('href')
+        result_title = result.find('div',{'class':'title'}).text
+        if not result_href or not result_title:
             continue
-        href = clean_google_url(a_tag.get("href"))
-        print("Processing URL: %s", href)
+        href = clean_google_url(result_href)
         if not href or site_name not in href:
             continue
         elif href == f"https://www.{site_name}/" or href == f"https://{site_name}/" or f"https://www.{site_name}/latest/" in href or f"https://{site_name}/latest/" in href:
             continue
-        elif href.startswith("/url?q") or href.startswith("/search?"):
+        elif href.startswith("/url?q") or href.startswith("/search?q"):  
             continue
-        elif "google.com" in href or "googleusercontent.com" in href:
-            continue
-            
-        index += 1
-        title_element = a_tag.find("h3")
-        if not title_element :
-            continue
-        
-        title = title_element.get_text(strip=True) if title_element else "No Title Found"
 
+        
+        index += 1
         obj = {
             "sector": key_data["sector"],
-            "tag" : tag,
+            "tag": tag,
             "search_string": search_term,
             "url": href,
-            "title": title,
+            "title": result_title.strip(),
             "pub_date": datetime.datetime.now().replace(hour=0, minute=0, second=0),
             "created_at": datetime.datetime.now(),
             "is_read": 0,
@@ -101,7 +115,7 @@ def parse_google_results(html, key_data, tag, search_term, site_name, logger ):
             "google_page": 1,
             "count": 1
         }
-
+        
         extracted_links.append(obj)
         logger.info("Collected URL: %s", href)
 
@@ -109,3 +123,30 @@ def parse_google_results(html, key_data, tag, search_term, site_name, logger ):
         logger.warning("No valid links extracted for search: %s", search_term)
 
     return extracted_links
+    return soup
+
+def parse_google_results(html, key_data, tag, search_term, site_name, logger ):
+    extracted_links = []
+    index = 0
+    
+    while True:
+        data = BeautifulSoup(html, 'lxml')
+        result_div = data.find('div',{'id':'results'})
+        if not result_div:
+            logger.warning("No results found in the HTML.")
+            break
+        
+        index += 1
+        logger.info("Processing page %d for search term: %s", index, search_term)
+        links = get_data_from_page(html, key_data, tag, search_term, site_name, logger, index)
+        extracted_links.extend(links)
+        
+        next_page_url = get_next_page_url(html)
+        if not next_page_url:
+            logger.info("No more pages to process.")
+            break
+
+        html = requests_next_page(next_page_url, site_name, logger)
+        if not html:
+            logger.warning("Failed to fetch next page HTML.")
+            break
