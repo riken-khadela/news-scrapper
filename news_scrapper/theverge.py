@@ -18,29 +18,6 @@ logger_file = os.path.join(os.getcwd(),'log','theverge.log')
 # )
 
 
-def get_request(url):
-    c = 0
-    print('Searching for: %s', url)
-
-    while c < 10:
-        try:
-            res = requests.get(url)
-            print('URL: %s', res.url)
-            print('*' * 100)
-
-            if res.status_code == 200:
-                return True, res
-           
-        except requests.Timeout:
-            print("Request timed out. Retrying...")
-        except requests.RequestException as e:
-            print("Request failed: %s", e)
-
-        print("Checking try again: %d", c)
-        time.sleep(0.5)
-        c += 1
-
-    return False, False
 
 def get_author(response, my_dict):
     try:
@@ -142,7 +119,7 @@ def clean_content(raw_content: str) -> str:
 def scrape(url) :
 
     # Main scraping logic - adapted for The Verge
-    isdone, res = get_request(url)
+    isdone, res = cf.get_request(url)
     obj = {}
     if isdone:
         data = BeautifulSoup(res.text, 'html.parser')
@@ -152,11 +129,11 @@ def scrape(url) :
         image = ""
         # Find main article container - The Verge uses 'article' tag or specific classes
         main_blog_div = data.find('article')
-        for i in main_blog_div.find_all('img') : 
-            image = i.get('src')
-            break
 
         if main_blog_div:
+            for i in main_blog_div.find_all('img') : 
+                image = i.get('src')
+                break
             # Extract heading - The Verge patterns
             heading = main_blog_div.find('h1')
             if not heading:

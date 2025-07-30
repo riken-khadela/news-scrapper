@@ -16,10 +16,10 @@ news_scrapper_data = masterclient.NEWSSCRAPERDATA
 news_url_1 = news_scrapper_data.news_url_1
 news_details_1 = news_scrapper_data.news_details_1
 
-def collect_links(numberofrecords = 100):
+def collect_links(numberofrecords = 10):
     updates = []
     random_documents = []
-    where_condition = {"is_read":1}
+    where_condition = {"is_read":0}
     pipeline = [{"$match": where_condition}, {"$sample": {"size": numberofrecords}}]
     random_documents = list(news_url_1.aggregate(pipeline))
     if len(random_documents) == 0:
@@ -27,8 +27,8 @@ def collect_links(numberofrecords = 100):
     for row in random_documents:
         updates.append(UpdateOne({"_id": row["_id"]}, {"$set": {"is_read": 1}}))
 
-    if updates :
-        result = news_url_1.bulk_write(updates)
+    # if updates :
+    #     result = news_url_1.bulk_write(updates)
     return random_documents
 
 def format_field(value):
@@ -50,27 +50,37 @@ def insert_news_details(data):
     
     for obj in data:
         try:
-            existing_doc = news_url_1.find_one({"url": obj["url"]})
+            if not obj : continue
+            existing_doc = news_details_1.find_one({"url": obj["url"]})
+            url=obj["url"]
+            regex_pattern = f'^{re.escape(url)}$'
+            doc = news_url_1.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
+            
+            if doc:
+                append_fields = {
+                    "count": doc["count"],
+                    "google_page": doc["google_page"],
+                    "index": doc["index"],
+                    "search_tag": format_field(doc["tag"]),
+                    "search_sector": format_field(doc["sector"])  
+                }
+                obj.update(append_fields)
+                
             if not existing_doc:
                 bulk_operations.append(pymongo.InsertOne(obj))
                 
             if existing_doc:
-                url=obj["url"]
-                regex_pattern = f'^{re.escape(url)}$'
-                doc = news_url_1.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
-                
-                if doc:
-                    append_fields = {
-                        "count": doc["count"],
-                        "google_page": doc["google_page"],
-                        "index": doc["index"],
-                        "search_tag": format_field(doc["tag"]),
-                        "search_sector": format_field(doc["sector"])  
-                    }
-                    obj.update(append_fields)
-                bulk_operations.append(pymongo.UpdateOne(obj))
-        except:continue
+                bulk_operations.append(UpdateOne(
+                    {"url": obj["url"]},
+                    {"$set": obj},
+                    upsert=True
+                ))
+        except:
+            print("Error processing URL: %s", obj.get("url", "Unknown"))
+            continue
     try:
+        print("Total numbers of records get: %d", len(bulk_operations))
+        
         if bulk_operations:
 
             result = news_details_1.bulk_write(bulk_operations)
@@ -102,11 +112,11 @@ def main():
         elif "inc42" in url :
             data.append(inc42.scrape(url))
             
+            
     if data :
         insert_news_details(data)
-        
         data = []
         
         
 if __name__ == "__main__":
-    main()
+    while True :main()

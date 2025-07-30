@@ -16,36 +16,6 @@ logger_file = os.path.join(os.getcwd(),'log','tech_crunch.log')
 # )
 
 
-def get_request(url):
-    c = 0
-    print('Searching for: %s', url)
-
-    while c < 10:
-        try:
-
-            res = requests.get(url, proxies=cf.proxies())
-            print(' URL: %s', res.url)
-            print('*' * 100)
-
-            if res.status_code == 200:
-                return True, res
-            else :
-                res = requests.get(url)
-                if res.status_code == 200:
-                    return True, res
-                print("-"*20,"tech crunch")
-        except requests.Timeout:
-            print("Request timed out. Retrying...")
-        except requests.RequestException as e:
-            print("Request failed: %s", e)
-
-        print("Checking try again: %d", c)
-        time.sleep(0.5)
-        c += 1
-
-    return False, False
-
-
 import re
 
 def get_author(response, my_dict):
@@ -99,7 +69,7 @@ def clean_content(raw_content: str) -> str:
 
 def scrape(url):
     obj = {}
-    isdone, res  = get_request(url)
+    isdone, res  = cf.get_request(url)
     if isdone :
         data = BeautifulSoup(res.text, 'html.parser')
         data_dict = {}
