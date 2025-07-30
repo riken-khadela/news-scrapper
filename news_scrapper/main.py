@@ -104,7 +104,7 @@ def main():
             
     if data :
         insert_news_details(data)
-        breakpoint()
+        
         data = []
         
         

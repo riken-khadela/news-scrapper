@@ -31,6 +31,9 @@ def get_request(url):
             if res.status_code == 200:
                 return True, res
             else :
+                res = requests.get(url)
+                if res.status_code == 200:
+                    return True, res
                 print("-"*20,"inc42")
         except requests.Timeout:
             print("Request timed out. Retrying...",f": {res.status_code}")

@@ -27,10 +27,14 @@ def get_request(url):
             res = requests.get(url, proxies=cf.proxies())
             print(' URL: %s', res.url)
             print('*' * 100)
-
+            breakpoint()
             if res.status_code == 200:
                 return True, res
-            
+            else :
+                res = requests.get(url)
+                if res.status_code == 200:
+                    return True, res
+                print("-"*20,"your story")
         except requests.Timeout:
             print("Request timed out. Retrying...")
         except requests.RequestException as e:

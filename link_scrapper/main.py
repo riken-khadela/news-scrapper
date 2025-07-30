@@ -38,6 +38,8 @@ def insert_multiple_urls_from_google(documents_list):
     news_url_1.create_index([("url", 1)], unique=True)
     bulk_operations = []
     update_details=[]
+    
+    
     for documents in documents_list:
         for obj in documents:
             try:
@@ -79,7 +81,7 @@ def insert_multiple_urls_from_google(documents_list):
                         update_details.append(UpdateOne({"_id": doc["_id"]}, {"$set": append_fields}))
             except Exception as e:
                 logger.error("Error processing document: %s", str(e))
-
+    
     try:
         if bulk_operations:
             result = news_url_1.bulk_write(bulk_operations)
@@ -100,7 +102,7 @@ def collect_page_details(sector, keywords, site_name, geo_locations = ['US']):
     logger = cf.logger(f'{site_name.split(".")[0]}.log')
     data = []
     for geo in geo_locations:
-        search_term = f"{sector} + {keywords}"
+        search_term = f"{sector['sector']} + {keywords}"
         html = get_google_search_results(search_term, site_name, 'm', logger)
         if html:
             data = parse_google_results(html, sector, keywords, search_term, site_name, logger)
@@ -138,7 +140,12 @@ def main():
             
             
             if all_urls :
-                insert_multiple_urls_from_google(all_urls)
+                for _ in range(3):
+                    try:
+                        insert_multiple_urls_from_google(all_urls)
+                    except Exception as e:
+                        logger.error("Error inserting URLs: %s", str(e))
+                        time.sleep(5)
                 all_urls = []
         
 

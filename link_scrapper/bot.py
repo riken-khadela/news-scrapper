@@ -118,6 +118,9 @@ def parse_google_results(html, key_data, tag, search_term, site_name, logger ):
     index = 0
     
     while True:
+        data = ""
+        next_page_url = ""
+        links = ""
         data = BeautifulSoup(html, 'lxml')
         result_div = data.find('div',{'id':'results'})
         if not result_div:
@@ -133,8 +136,15 @@ def parse_google_results(html, key_data, tag, search_term, site_name, logger ):
         if not next_page_url:
             logger.info("No more pages to process.")
             break
+        elif "offset=0" in next_page_url:
+            logger.info("Reached the end of pagination.")
+            break
 
         html = requests_next_page(next_page_url, site_name, logger)
         if not html:
             logger.warning("Failed to fetch next page HTML.")
             break
+        
+    print(f"Total links extracted: {len(extracted_links)}")
+    return extracted_links
+        
