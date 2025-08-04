@@ -210,3 +210,6 @@ __marimo__/
 
 etc
 *.html
+others
+*.csv
+*.json
