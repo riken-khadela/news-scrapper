@@ -4,7 +4,7 @@ import urllib, requests, logging, time, datetime
 from datetime import date, timedelta
 from fake_useragent import UserAgent
 import re, os
-import settings as cf
+import news_scrapper.settings as cf
 
 
 logger_file = os.path.join(os.getcwd(),'log','digital_trends.log')
