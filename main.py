@@ -7,7 +7,7 @@ import traceback
 
 def run_cycle_for_4_hours():
     start_time = time.time()
-    run_duration = 6 * 60 * 60  # 4 hours in seconds
+    run_duration = 4 * 60 * 60  # 4 hours in seconds
 
     while time.time() - start_time < run_duration:
         try:
@@ -36,4 +36,4 @@ if __name__ == "__main__":
         run_cycle_for_4_hours()
 
         print("[INFO] 4-hour cycle complete. Now sleeping for 4 hours...")
-        time.sleep(2 * 60 * 60)  
+        time.sleep(4 * 60 * 60)  
