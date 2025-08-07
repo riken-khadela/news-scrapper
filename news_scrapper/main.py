@@ -1,12 +1,13 @@
-import inc42 
-import tech_crunch
-import your_story
-import theverge
-import digitaltrands
+from news_scrapper import inc42 
+from news_scrapper import tech_crunch
+from news_scrapper import your_story
+from news_scrapper import theverge
+from news_scrapper import digitaltrands
 
 import random, pymongo, logging, re
 from pymongo import MongoClient, UpdateOne, InsertOne
 from pymongo.errors import BulkWriteError
+
 logger = logging.getLogger(__name__)
 masterclient = MongoClient("mongodb://vinayj:7x34gkm5@65.108.33.28:27017/?authSource=TRAKINTELSCRAPER&authMechanism=SCRAM-SHA-256&readPreference=primary&directConnection=true&tls=true&tlsAllowInvalidCertificates=true")
 news_scrapper = masterclient.NEWSSCRAPER

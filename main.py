@@ -1,17 +1,9 @@
-from update_scrapper.scrapper import MainUpdateScrapping1
-from new_scrapper.scrapper import MainNewScrapping
+from link_scrapper.main import main as link_scrapper
+from news_scrapper.main import main as news_scrapper
 import threading
 import time
 import traceback
-from crunch_link_scrapper import collect_page_details
 
-def run_MainUpdateScrapping1():
-    scrapper = MainUpdateScrapping1()
-    scrapper.thread_function()
-
-def run_MainNewScrapping():
-    scrapper = MainNewScrapping()
-    scrapper.thread_function()
 
 def run_cycle_for_4_hours():
     start_time = time.time()
@@ -19,10 +11,8 @@ def run_cycle_for_4_hours():
 
     while time.time() - start_time < run_duration:
         try:
-            collect_page_details()
-
-            t1 = threading.Thread(target=run_MainUpdateScrapping1)
-            t2 = threading.Thread(target=run_MainNewScrapping)
+            t1 = threading.Thread(target=link_scrapper)
+            t2 = threading.Thread(target=news_scrapper)
 
             t1.start()
             t2.start()

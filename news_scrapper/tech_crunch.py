@@ -4,9 +4,8 @@ import urllib, requests, logging, time, datetime
 from datetime import date, timedelta
 from fake_useragent import UserAgent
 import random, os
-import settings as cf
+import news_scrapper.settings as cf
 
-TOKEN = "50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269"
 logger_file = os.path.join(os.getcwd(),'log','tech_crunch.log')
 
 # logging.basicConfig(

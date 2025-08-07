@@ -3,12 +3,12 @@ import datetime
 import requests
 from fake_useragent import UserAgent
 import urllib.parse
-import settings as cf
+import link_scrapper.settings as cf
 import logging, os, urllib3
 import glob
 from urllib.parse import unquote
 
-from settings import proxies, logger as get_logger  # assuming `proxies()` and `logger()` are in settings.py
+from link_scrapper.settings import proxies, logger as get_logger  # assuming `proxies()` and `logger()` are in settings.py
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def get_google_search_results(search_term, site_name, time='w', country_code='US'):

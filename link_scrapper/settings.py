@@ -1,10 +1,5 @@
 import logging
 import os, random
-
-TOKEN = "50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269"
-
-import logging
-import os
 class SiteFilter(logging.Filter):
     def __init__(self, site_name):
         super().__init__()

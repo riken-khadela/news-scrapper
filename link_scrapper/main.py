@@ -1,8 +1,8 @@
 import random, pymongo, logging, re, time
 from pymongo import MongoClient, UpdateOne, InsertOne
 from pymongo.errors import BulkWriteError
-import settings as cf 
-from bot import get_google_search_results, parse_google_results
+import link_scrapper.settings as cf 
+from link_scrapper.bot import get_google_search_results, parse_google_results
 
 logger = logging.getLogger(__name__)
 masterclient = MongoClient("mongodb://vinayj:7x34gkm5@65.108.33.28:27017/?authSource=TRAKINTELSCRAPER&authMechanism=SCRAM-SHA-256&readPreference=primary&directConnection=true&tls=true&tlsAllowInvalidCertificates=true")
@@ -138,6 +138,10 @@ def main():
             if your_story_ :
                 all_urls.append(your_story_)
             
+            crunchbase_ = collect_page_details(sector, keyword, "news.crunchbase.com", LOCATION)
+            if crunchbase_ :
+                all_urls.append(crunchbase_)
+            
             
             if all_urls :
                 for _ in range(3):
@@ -148,6 +152,3 @@ def main():
                         time.sleep(5)
                 all_urls = []
         
-
-if __name__ == "__main__":
-    main()

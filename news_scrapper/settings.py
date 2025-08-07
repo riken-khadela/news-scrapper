@@ -1,14 +1,14 @@
 import logging
 from fake_useragent import UserAgent
 import os, random, requests, time
-import requests, urllib3, urllib
+import requests, urllib3, urllib, json
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 CONFIG_FILE = "config.json"
 with open(CONFIG_FILE, "r") as f: config = json.load(f)
 TOKEN = config["token"]
-
+print(f"TOKEN : {TOKEN}")
 def logger(file_name):
     """Initialize logging to a file."""
     check_log_file(file_name)
@@ -87,7 +87,7 @@ def get_request(url):
         except requests.Timeout:
             print("Request timed out. Retrying...")
         except requests.RequestException as e:
-            print("Request failed: %s", e)
+            return get_scrape_do_requests(url)
 
         print("Checking try again: %d", c)
         time.sleep(0.5)

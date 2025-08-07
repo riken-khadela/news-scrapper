@@ -7,13 +7,6 @@ from fake_useragent import UserAgent
 import time
 import link_scrapper.settings as cf
 
-TOKEN = "50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269"
-
-# print(
-#     filename='/home/user1/startups/news_scrapper/link_scrapper/logs/tech_crunch.log',
-#     level=print,
-#     format='%(asctime)s [%(levelname)s] %(message)s'
-# )
 
 
 def get_google_search_results(search_term = "Funding & Investment", country_code='US'):
