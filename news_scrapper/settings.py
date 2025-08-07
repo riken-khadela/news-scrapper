@@ -1,11 +1,13 @@
 import logging
 from fake_useragent import UserAgent
 import os, random, requests, time
-import requests, urllib3
+import requests, urllib3, urllib
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-TOKEN = "50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269"
+CONFIG_FILE = "config.json"
+with open(CONFIG_FILE, "r") as f: config = json.load(f)
+TOKEN = config["token"]
 
 def logger(file_name):
     """Initialize logging to a file."""
@@ -33,20 +35,39 @@ def check_log_file(file):
 
 
 def proxies():
-    # plist = [
-    #     "37.48.118.90:13082",
-    #     "83.149.70.159:13082"
-    # ]
-    # prx = random.choice(plist)
-    # return {
-    #     'http': 'http://' + prx,
-    #     'https': 'http://' + prx
-    # }
+    plist = [
+        "37.48.118.90:13082",
+        "83.149.70.159:13082"
+    ]
+    prx = random.choice(plist)
     return {
-    "http": f"http://brd-customer-hl_df6beaf5-zone-residential_proxy1:ay4093z76g9j@brd.superproxy.io:33335",
-    "https": f"http://brd-customer-hl_df6beaf5-zone-residential_proxy1:ay4093z76g9j@brd.superproxy.io:33335",
-}
+        'http': 'http://' + prx,
+        'https': 'http://' + prx
+    }
 
+def get_scrape_do_requests(url):
+    c = 0
+    headers = {"User-Agent": UserAgent().random}
+    while c < 10:
+        try:
+            encoded_url = urllib.parse.quote_plus(url)
+            url = f"https://api.scrape.do/?token={TOKEN}&url={encoded_url}"
+            res = requests.get(url, headers=headers, verify=False)
+            print(f'scrape do URL: {res.url} : status code --> {res.status_code}',)
+
+            if res.status_code == 200:
+                return True, res
+
+        except requests.Timeout:
+            print("Request timed out. Retrying...")
+        except requests.RequestException as e:
+            print("Request failed: %s", e)
+
+        print("Scrape do Checking try again: %d", c)
+        time.sleep(0.5)
+        c += 1
+
+    return False, False
 
 
 def get_request(url):
@@ -56,14 +77,13 @@ def get_request(url):
         try:
 
             res = requests.get(url, headers=headers, proxies=proxies(), verify=False)
-            print(' URL: %s', res.url)
+            print(f' URL: {res.url} : status code --> {res.status_code}',)
 
             if res.status_code == 200:
                 return True, res
             else :
-                res = requests.get(url)
-                if res.status_code == 200:
-                    return True, res
+                return get_scrape_do_requests(url)
+            
         except requests.Timeout:
             print("Request timed out. Retrying...")
         except requests.RequestException as e:

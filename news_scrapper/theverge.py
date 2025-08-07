@@ -175,17 +175,11 @@ def scrape(url) :
                     "insert_date": datetime.datetime.now(),
                     "source": "The Verge"
                 }
-                print("Article scraped successfully!")
-                print(f"Title: {obj['title']}")
-                print(f"Author: {obj['author']}")
-                print(f"Word Count: {obj['word_count']}")
-                print(f"Content Preview: {obj['description'][:200]}...")
                 
             else:
                 print(f"Article too short or no content found. Word count: {desc_len}")
                 
         except Exception as e:
-            print("Error processing URL: %s", e)
             print(f"Error processing article: {e}")
 
     return obj

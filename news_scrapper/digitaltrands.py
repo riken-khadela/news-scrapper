@@ -181,20 +181,10 @@ def scrape(url):
                     "source": "DigitalTrends"
                 }
                 
-                print("Article scraped successfully!")
-                print(f"Title: {obj['title']}")
-                print(f"Author: {obj['author']}")
-                print(f"image: {obj['image']}")
-                print(f"Word Count: {obj['word_count']}")
-                print(f"Content Preview: {obj['description'][:200]}...")
-                
             else:
                 print(f"Article too short or no content found. Word count: {desc_len}")
                 
         except Exception as e:
-            print("Error processing URL: %s", e)
             print(f"Error processing article: {e}")
 
-        print("Scraping completed!")
-        
     return obj

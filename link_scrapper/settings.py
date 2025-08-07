@@ -15,10 +15,10 @@ class SiteFilter(logging.Filter):
         return True
     
 def logger(site_name: str):
-    log_file = "log/combined.log"
+    log_file = "log/link_scrapper.log"
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
 
-    log = logging.getLogger("combined_logger")
+    log = logging.getLogger("link_scrapper")
 
     if not log.handlers:
         log.setLevel(logging.INFO)

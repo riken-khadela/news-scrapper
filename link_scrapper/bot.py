@@ -6,6 +6,8 @@ import urllib.parse
 import settings as cf
 import logging, os, urllib3
 import glob
+from urllib.parse import unquote
+
 from settings import proxies, logger as get_logger  # assuming `proxies()` and `logger()` are in settings.py
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -24,7 +26,6 @@ def get_google_search_results(search_term, site_name, time='w', country_code='US
         query = f"{search_term} site:{site_name}"
         params = {"q": query,"tf": f"pm",}
         search_url = f"https://search.brave.com/search?{urllib.parse.urlencode(params)}"
-        breakpoint()
         response = requests.get(search_url, headers=headers, timeout=10, proxies=proxies())
         logger.info("Response status code: %s", response.status_code)
         if response.status_code == 200:
