@@ -3,13 +3,18 @@ from news_scrapper import tech_crunch
 from news_scrapper import your_story
 from news_scrapper import theverge
 from news_scrapper import digitaltrands
+from news_scrapper.settings import logger as get_logger
 
-import random, pymongo, logging, re
+import random, pymongo, logging, re, json
 from pymongo import MongoClient, UpdateOne, InsertOne
 from pymongo.errors import BulkWriteError
 
-logger = logging.getLogger(__name__)
-masterclient = MongoClient("mongodb://vinayj:7x34gkm5@65.108.33.28:27017/?authSource=TRAKINTELSCRAPER&authMechanism=SCRAM-SHA-256&readPreference=primary&directConnection=true&tls=true&tlsAllowInvalidCertificates=true")
+CONFIG_FILE = "config.json"
+with open(CONFIG_FILE, "r") as f: config = json.load(f)
+mongo_db_connection = config["mongo_db_connection"]
+
+logger = get_logger(f'link scrapper main.log')
+masterclient = MongoClient(mongo_db_connection)
 news_scrapper = masterclient.NEWSSCRAPER
 sector_collection = news_scrapper.keywords
 

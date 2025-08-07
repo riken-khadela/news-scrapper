@@ -1,5 +1,6 @@
 import logging
 import os, random
+
 class SiteFilter(logging.Filter):
     def __init__(self, site_name):
         super().__init__()

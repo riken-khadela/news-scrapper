@@ -8,7 +8,33 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 CONFIG_FILE = "config.json"
 with open(CONFIG_FILE, "r") as f: config = json.load(f)
 TOKEN = config["token"]
-print(f"TOKEN : {TOKEN}")
+
+class SiteFilter(logging.Filter):
+    def __init__(self, site_name):
+        super().__init__()
+        self.site_name = site_name
+
+    def filter(self, record):
+        record.site = self.site_name
+        return True
+    
+def logger(site_name: str):
+    log_file = "log/link_scrapper.log"
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
+    log = logging.getLogger("link_scrapper")
+
+    if not log.handlers:
+        log.setLevel(logging.INFO)
+        file_handler = logging.FileHandler(log_file)
+        formatter = logging.Formatter('%(asctime)s [%(levelname)s] [%(site)s] %(message)s')
+        file_handler.setFormatter(formatter)
+        log.addHandler(file_handler)
+
+    # always add new site context filter
+    log.addFilter(SiteFilter(site_name))
+    return log
+
 def logger(file_name):
     """Initialize logging to a file."""
     check_log_file(file_name)

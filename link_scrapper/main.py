@@ -1,11 +1,15 @@
-import random, pymongo, logging, re, time
+import random, pymongo, logging, re, time, json
 from pymongo import MongoClient, UpdateOne, InsertOne
 from pymongo.errors import BulkWriteError
 import link_scrapper.settings as cf 
 from link_scrapper.bot import get_google_search_results, parse_google_results
 
-logger = logging.getLogger(__name__)
-masterclient = MongoClient("mongodb://vinayj:7x34gkm5@65.108.33.28:27017/?authSource=TRAKINTELSCRAPER&authMechanism=SCRAM-SHA-256&readPreference=primary&directConnection=true&tls=true&tlsAllowInvalidCertificates=true")
+CONFIG_FILE = "config.json"
+with open(CONFIG_FILE, "r") as f: config = json.load(f)
+mongo_db_connection = config["mongo_db_connection"]
+
+logger = cf.logger(f'link scrapper main.log')
+masterclient = MongoClient(mongo_db_connection)
 news_scrapper = masterclient.NEWSSCRAPER
 sector_collection = news_scrapper.keywords
 
