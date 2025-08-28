@@ -8,7 +8,10 @@ from requests import RequestException
 from settings import get_request, get_scrape_do_requests, news_details_client, yourstory_scrape_do_requests
 from datetime import datetime
 
-URL = "https://techcrunch.com/latest/"
+URLS = [
+    "https://techfundingnews.com/category/acquisition/",
+    "https://techfundingnews.com/category/top-funding-rounds/"
+]
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,24 +20,24 @@ logging.basicConfig(
 )
 
 
-class TechCrunch:
+class TechFundingNews:
     def __init__(self):
         self.grid_details = []
 
         # Ensure MongoDB has an index on URL for speed
         news_details_client.create_index("url", unique=True)
 
-    def get_grid_details(self):
+    def get_grid_details(self, url):
         """Scrape the grid (listing) page."""
         try:
-            done, response = get_request(URL)
-            # done, response = get_scrape_do_requests(URL)
+            done, response = get_request(url)
+            # done, response = get_scrape_do_requests(url)
             if not done:
-                logging.error(f"Request failed: {URL}")
+                logging.error(f"Request failed: {url}")
                 return []
 
-            self.grid_details = self.scrape_grid_data(response.text)
-            # with open("tech_crunch_response.html", "w", encoding="utf-8") as f:f.write(response.text)
+            self.scrape_grid_data(response.text)
+            # with open("tech_in_asia_response.html", "w", encoding="utf-8") as f:f.write(response.text)
             
             logging.info(f"Collected {len(self.grid_details)} grid items.")
             return self.grid_details
@@ -52,14 +55,17 @@ class TechCrunch:
         """
         data = BeautifulSoup(html_content, 'html.parser')
         
-        articles = [ i for i in data.find_all('li',{'class':'post'}) if i.find('img') ]
+        articles = data.find('div',{'class':'cs-posts-area__list'}) 
 
-        extracted_data = []
-        for article in articles:
+        if not articles:
+            logging.warning("No articles found on the page.")
+            return []
+        
+        for article in articles.find_all('article'):
             try:
                 article_url = ""
                 # Extract title from the span inside the title link
-                title_span = article.find('h3')
+                title_span = article.find('h2')
                 if title_span :
                     article_url = title_span.find('a').get('href', '')
                     
@@ -68,33 +74,34 @@ class TechCrunch:
                         continue
 
                 # Extract date
-                date_span = article.find('time')
-                date = date_span.get('datetime', '') if date_span else 'No date'
-                
+                date_span = article.find('div', class_='cs-meta-date')
+                date = date_span.get_text(strip=True) if date_span else 'No date'
+
                 # Extract image URL
                 img_tag = article.find('img')
-                image_url = img_tag.get('src', '') if img_tag else 'No image'
+                image_url = img_tag.get('data-pk-src', '') if img_tag else 'No image'
                 
                 # Extract category (News, etc.)
-                category_span = article.find('div', class_='loop-card__cat-group')
-                category = category_span.get_text(strip=True) if category_span else 'No category'
-                
+                category_span = article.find('div', class_='cs-meta-category').find_all('li')
+                category = [i.text for i in category_span]
+                category = ', '.join(category) if category else 'No category'
+
                 # Store the extracted data
                 article_data = {
                     'title': title,
                     'url': article_url,
-                    'time': date,
+                    'time': datetime.strptime(date, "%B %d, %Y"),
                     'image': image_url,
                     'category': category
                 }
                 
-                extracted_data.append(article_data)
+                self.grid_details.append(article_data)
                 
             except Exception as e:
                 print(f"Error extracting data from article: {e}")
                 continue
         
-        return extracted_data
+        return self.grid_details
 
     def separate_blog_details(self, response):
         """Parse the full blog page for details."""
@@ -105,9 +112,8 @@ class TechCrunch:
             details['author'] = data.find('meta',{'name':'author'}).get('content','')
 
             # description
-            details['description']['summary'] = data.find('p',{'id':'speakable-summary'}).get_text(strip=True)
-            details['description']['details'] = data.find('div',{'class':'wp-block-post-content'}).get_text(strip=True).replace(details['description']['summary'],'')
-
+            details['description']['summary'] = []
+            details['description']['details'] = data.find('div',{'class':'entry-content'}).get_text(strip=True)
         except Exception as e:
             logging.exception(f"Error parsing blog details: {e}")
 
@@ -125,7 +131,7 @@ class TechCrunch:
                 if not done:
                     logging.warning(f"Failed fetching: {grid['url']}")
                     continue
-
+                
                 details = self.separate_blog_details(response)
                 merged = {**details, **grid}
                 # Convert time if it's a string
@@ -157,10 +163,11 @@ class TechCrunch:
                 logging.exception(f"Error in check_db_grid for {grid['url']}: {e}")
 
     def run(self):
-        self.get_grid_details()
+        for url in URLS:
+            self.get_grid_details(url)
         if self.grid_details:
             self.check_db_grid()
 
 
-if __name__ == "__main__":
-    TechCrunch().run()
+# if __name__ == "__main__":
+#     TechFundingNews().run()

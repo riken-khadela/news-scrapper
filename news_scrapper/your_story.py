@@ -1,112 +1,216 @@
+import logging
+import time
+from datetime import datetime
+import json
+from annotated_types import T
 from bs4 import BeautifulSoup
-from lxml import etree
-import urllib, requests, logging, time, datetime
-from datetime import date, timedelta
-from fake_useragent import UserAgent
-import re, os
-import news_scrapper.settings as cf
+from requests import RequestException
+from settings import get_request, get_scrape_do_requests, news_details_client, yourstory_scrape_do_requests
+from datetime import datetime
 
-logger_file = os.path.join(os.getcwd(),'log','your_story.log')
+URL = "https://yourstory.com/search?page=1&tag=Just%20In"
 
-# logging.basicConfig(
-#     filename=cf.check_log_file(logger_file),
-#     level=print,
-#     format='%(asctime)s [%(levelname)s] %(message)s'
-# )
 
-import re
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(filename)s - %(lineno)d - %(message)s",
+    handlers=[logging.StreamHandler()]
+)
 
-def get_author(response, my_dict):
+
+class YourStory:
+    def __init__(self):
+        self.grid_details = []
+
+        # Ensure MongoDB has an index on URL for speed
+        news_details_client.create_index("url", unique=True)
+
+    def get_grid_details(self):
+        """Scrape the grid (listing) page."""
         try:
-            authors_data = []
-            author = ''
-            data = BeautifulSoup(response.text, 'html.parser')
-            tree = etree.HTML(str(data))
-            meta_names = ['citation_author', 'dc.creator', 'parsely-author', 'DC.Contributor', 'author',
-                          'authors-name', 'article-author', 'og:authors', 'og:author']
-            try:
-                for meta_name in meta_names:
-                    meta_authors = tree.xpath(f"//meta[@*='{meta_name}']")
-                    if meta_authors:
-                        authors = [meta_author.get('content') for meta_author in meta_authors if
-                                   meta_author.get('content')]
-                        if authors:
-                            author = ' | '.join(authors).replace(",", "")
-                            break
-            except:
-                pass
-        except:
-            pass
-        return author
+            done, response = yourstory_scrape_do_requests(URL)
+            if not done:
+                logging.error(f"Request failed: {URL}")
+                return []
 
-def word_count( text):
-        return len(text.split())
+            data = BeautifulSoup(response.text, "html.parser")
 
-def get_image(response, my_dict):
-        image = ''
-        data = BeautifulSoup(response.text, 'lxml')
-        dom = etree.HTML(str(data))
-        image_xpath = "//meta[contains(@property, 'image')]/@content | //meta[contains(@name, 'image')]/@content | //*[contains(@class, 'featured-image')]/@src | //img[contains(@class, 'featured-image')]/@src | //meta[contains(@property, 'og:image:secure_url')]/@content | //meta[contains(@property, 'og:image')]/@content | //image/@src"
-        if dom.xpath(image_xpath):
-            images = dom.xpath(image_xpath)
-            for i in images:
-                if i.endswith('.jpg') or i.endswith('.jpeg') or i.endswith('.png'):
-                    image = i
-                    break
-        return image
+            self.grid_details = self.scrape_yourstory_data(response.text)
+            # with open("yourstory_response.html", "w", encoding="utf-8") as f:f.write(response.text)
+            
+            logging.info(f"Collected {len(self.grid_details)} grid items.")
+            return self.grid_details
 
-
-def clean_content(raw_content: str) -> str:
-    # Remove non-breaking spaces and replace with space
-    content = raw_content.replace('\xa0', ' ')
-
-    # Remove image credits
-    content = re.sub(r'Image Credits:.*\n?', '', content)
-
-    # Remove TechCrunch promotional content (events, newsletter etc.)
-    content = re.sub(r'Techcrunch event.*?REGISTER NOW\n+', '', content, flags=re.DOTALL | re.IGNORECASE)
-    content = re.sub(r'TechCrunch has an AI-focused newsletter!.*', '', content, flags=re.DOTALL)
-
-    # Remove excessive newlines (more than 2 in a row)
-    content = re.sub(r'\n{2,}', '\n\n', content)
-
-    # Strip leading/trailing whitespace
-    return content.strip()
-
-def scrape(url):
-    obj = {}
-    isdone, res  = cf.get_request(url)
-    if isdone :
-        data = BeautifulSoup(res.text, 'html.parser')
-        data_dict = {}
-        main_blog_div = data.find('article')
-        if main_blog_div :
-            # heading
-            heading = main_blog_div.find_all('h1')
-            if heading :
-                data_dict['heading'] = heading[0].text
-                    
-            # blog data
-            BlogContentMain = main_blog_div.find('div',{'id':'article_container'})
-            if BlogContentMain :
-                data_dict['content'] = clean_content(BlogContentMain.text)
-
-        try:
-            author = get_author(res, data_dict)
-            description = data_dict.get('content','')
-            image = get_image(res, data_dict)
-            desc_len = word_count(description)
-            if description != '' and desc_len >= 150:
-                obj = {
-                    "url": str(res.url),
-                    "title": data_dict['heading'],
-                    "author": author,
-                    "description": description,
-                    "image": image,
-                    'insert_date': datetime.datetime.now()
-                }
+        except RequestException as e:
+            logging.exception(f"Request error while fetching grid: {e}")
+            return []
         except Exception as e:
-            print("Error processing URL: %s", e)
-            pass
+            logging.exception(f"Unexpected error in get_grid_details: {e}")
+            return []
+
+    def scrape_yourstory_data(self, html_content):
+        """
+        Extract article data from YourStory search results
+        """
+        soup = BeautifulSoup(html_content, 'html.parser')
         
-    return obj
+        # Find all article li elements
+        articles = soup.find_all('li', class_='sc-c9f6afaa-0 cuRydj')
+        
+        extracted_data = []
+        
+        for article in articles:
+            try:
+                # Extract article URL and title
+                title_link = article.find('a', class_='sc-43a0d796-0 khwyEN')
+                if not title_link:
+                    continue
+                    
+                article_url = 'https://yourstory.com' + title_link.get('href', '')
+                
+                # Extract title from the span inside the title link
+                title_span = article.find('span', attrs={'pathname': '/search'})
+                title = title_span.get_text(strip=True) if title_span else 'No title'
+
+                if title == 'No title':
+                    continue
+
+                # Extract date
+                date_span = article.find('span', class_='sc-36431a7-0 dpmmXH')
+                date = date_span.get_text(strip=True) if date_span else 'No date'
+                
+                # Extract image URL
+                img_tag = article.find('img', class_='sc-c6064b83-0 ddvyxk')
+                image_url = img_tag.get('src', '') if img_tag else 'No image'
+                
+                # Extract category (News, etc.)
+                category_span = article.find('span', class_='sc-c9f6afaa-4 exBjWC')
+                category = category_span.get_text(strip=True) if category_span else 'No category'
+                
+                # Store the extracted data
+                article_data = {
+                    'title': title,
+                    'url': article_url,
+                    'date': date,
+                    'image_url': image_url,
+                    'category': category
+                }
+                
+                extracted_data.append(article_data)
+                
+            except Exception as e:
+                print(f"Error extracting data from article: {e}")
+                continue
+        
+        return extracted_data
+
+    def seprate_blog_details(self, response):
+        """Parse the full blog page for details."""
+        details = {"description": {}}
+        try:
+            data = BeautifulSoup(response.text, "html.parser")
+
+            data.find('div',{'id':'S:1'})
+            json_scripts = data.find_all('script', type='application/ld+json')
+            if json_scripts :
+                json_data = json.loads(json_scripts[-1].string)
+                details['title'] = json_data.get('headline', '')
+                if json_data.get('author', []):
+                    details['author'] = json_data.get('author', [])[-1].get('name', '')
+                details['time'] = json_data.get('datePublished', '')
+                details['description']['summery'] = json_data.get('description', '').replace('SUMMARY\n','').split('\n')
+                details['image'] = json_data.get('image', '')
+
+            # header
+            header_ele = data.find('header',{'id':'article-start-row'})
+            header_ele.find('p', class_=lambda x: x and 'font-neue' in x)
+            if header_ele :
+                # title
+                title_elem = header_ele.find('h1')
+                if title_elem:
+                    details['title'] = title_elem.get_text(strip=True)
+
+                # image
+                img_ele = header_ele.find('img',{'class':'object-cover'})
+                if img_ele :
+                    att_list = img_ele.get_attribute_list('srcset')
+                    details['image'] = att_list[-1] if att_list else ''
+
+                # date
+                date_elem = header_ele.find('p', class_=lambda x: x and 'font-neue' in x)
+                if date_elem:
+                    date_timeframe = date_elem.get_text(strip=True).split(' ,')[0]
+                    details['time'] = datetime.strptime(date_timeframe, "%A %B %d, %Y")
+
+            # summary
+            summery_div = data.find('h2')
+            if summery_div :
+                details['description']['summery'] = summery_div.text.strip().replace('SUMMARY\n','').split('\n')
+            
+            # details
+            details_div = data.find('div',{'class':'quill-content'})
+            if details_div:
+                details["description"]["details"] = details_div.get_text(separator="\n", strip=True).split('\nSign up')[0]
+                
+            # author
+            author_anchor = data.find('a',{'class':'article_author_name'})
+            if author_anchor:
+                details['author'] = author_anchor.get_text(strip=True)
+
+        except Exception as e:
+            logging.exception(f"Error parsing blog details: {e}")
+
+        return details
+
+    def check_db_grid(self):
+        """Check DB before fetching details; skip if exists."""
+        for grid in self.grid_details:
+            try:
+                if news_details_client.find_one({"url": grid["url"]}):
+                    logging.info(f"Skipping (already in DB): {grid['url']}")
+                    continue
+
+                done, response = get_scrape_do_requests(grid["url"])
+                if not done:
+                    logging.warning(f"Failed fetching: {grid['url']}")
+                    continue
+
+                details = self.seprate_blog_details(response)
+                merged = {**details, **grid}
+                
+                # Convert time if it's a string
+                if isinstance(merged["time"], str) and merged["time"]:
+                    try:
+                        # TODO: adjust strptime format as per site’s time format
+                        merged["time"] = datetime.strptime(
+                            merged["time"], "%B %d, %Y"
+                        )
+                    except Exception:
+                        merged["time"] = datetime.utcnow()
+
+                news_details_client.update_one(
+                    {"url": merged["url"]},
+                    {"$set": {
+                        "title": merged["title"],
+                        "author": merged["author"],
+                        "image": merged["image"],
+                        "description": merged["description"],
+                        "time": merged["time"],
+                        "category" : merged["category"]
+                    }},
+                    upsert=True
+                )
+                logging.info(f"Inserted new article: {merged['url']}")
+
+                time.sleep(1) 
+            except Exception as e:
+                logging.exception(f"Error in check_db_grid for {grid['url']}: {e}")
+
+    def run(self):
+        self.get_grid_details()
+        if self.grid_details:
+            self.check_db_grid()
+
+
+# if __name__ == "__main__":
+#     YourStory().run()

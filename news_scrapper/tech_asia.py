@@ -8,7 +8,7 @@ from requests import RequestException
 from settings import get_request, get_scrape_do_requests, news_details_client, yourstory_scrape_do_requests
 from datetime import datetime
 
-URL = "https://techcrunch.com/latest/"
+URL = "https://www.techinasia.com/news/byd-overtakes-tesla-europes-july-car-sales"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,7 +34,7 @@ class TechCrunch:
                 return []
 
             self.grid_details = self.scrape_grid_data(response.text)
-            # with open("tech_crunch_response.html", "w", encoding="utf-8") as f:f.write(response.text)
+            # with open("tech_in_asia_response.html", "w", encoding="utf-8") as f:f.write(response.text)
             
             logging.info(f"Collected {len(self.grid_details)} grid items.")
             return self.grid_details
@@ -52,14 +52,18 @@ class TechCrunch:
         """
         data = BeautifulSoup(html_content, 'html.parser')
         
-        articles = [ i for i in data.find_all('li',{'class':'post'}) if i.find('img') ]
+        articles = data.find('div',{'class':'cs-posts-area__list'}) 
 
+        if not articles:
+            logging.warning("No articles found on the page.")
+            return []
+        
         extracted_data = []
-        for article in articles:
+        for article in articles.find_all('article'):
             try:
                 article_url = ""
                 # Extract title from the span inside the title link
-                title_span = article.find('h3')
+                title_span = article.find('h2')
                 if title_span :
                     article_url = title_span.find('a').get('href', '')
                     
@@ -68,23 +72,24 @@ class TechCrunch:
                         continue
 
                 # Extract date
-                date_span = article.find('time')
-                date = date_span.get('datetime', '') if date_span else 'No date'
-                
+                date_span = article.find('div', class_='cs-meta-date')
+                date = date_span.get_text(strip=True) if date_span else 'No date'
+
                 # Extract image URL
                 img_tag = article.find('img')
-                image_url = img_tag.get('src', '') if img_tag else 'No image'
+                image_url = img_tag.get('data-pk-src', '') if img_tag else 'No image'
                 
                 # Extract category (News, etc.)
-                category_span = article.find('div', class_='loop-card__cat-group')
-                category = category_span.get_text(strip=True) if category_span else 'No category'
-                
+                category_span = article.find('div', class_='cs-meta-category').find_all('li')
+                category = [i.text for i in category_span]
+                category = ', '.join(category) if category else 'No category'
+
                 # Store the extracted data
                 article_data = {
                     'title': title,
                     'url': article_url,
-                    'time': date,
-                    'image': image_url,
+                    'date': date,
+                    'image_url': image_url,
                     'category': category
                 }
                 
@@ -98,6 +103,7 @@ class TechCrunch:
 
     def separate_blog_details(self, response):
         """Parse the full blog page for details."""
+        with open("tech_in_asia_response.html", "w", encoding="utf-8") as f:f.write(response.text)
         details = {"description": {}}
         try:
             data = BeautifulSoup(response.text, "html.parser")
@@ -125,7 +131,8 @@ class TechCrunch:
                 if not done:
                     logging.warning(f"Failed fetching: {grid['url']}")
                     continue
-
+                
+                
                 details = self.separate_blog_details(response)
                 merged = {**details, **grid}
                 # Convert time if it's a string

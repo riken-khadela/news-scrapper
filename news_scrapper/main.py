@@ -1,128 +1,25 @@
-from news_scrapper import inc42 
-from news_scrapper import tech_crunch
-from news_scrapper import your_story
-from news_scrapper import theverge
-from news_scrapper import digitaltrands
-from news_scrapper.settings import logger as get_logger
+import threading
+import time
+import traceback
+import logging
+from tech_funding_news import TechFundingNews
+from tech_crunch import TechCrunch
+from your_story import YourStory
+from inc42 import Inc42
 
-import random, pymongo, logging, re, json
-from pymongo import MongoClient, UpdateOne, InsertOne
-from pymongo.errors import BulkWriteError
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(filename)s - %(lineno)d - %(message)s",
+    handlers=[logging.StreamHandler()]
+)
 
-CONFIG_FILE = "config.json"
-with open(CONFIG_FILE, "r") as f: config = json.load(f)
-mongo_db_connection = config["mongo_db_connection"]
+def news_scrapper():
+    TechFundingNews().run()
+    TechCrunch().run()
+    YourStory().run()
+    Inc42().run()   
 
-logger = get_logger(f'link scrapper main.log')
-masterclient = MongoClient(mongo_db_connection)
-news_scrapper = masterclient.NEWSSCRAPER
-sector_collection = news_scrapper.keywords
-
-news_scrapper_data = masterclient.NEWSSCRAPERDATA
-news_url_1 = news_scrapper_data.news_url_1
-news_details_1 = news_scrapper_data.news_details_1
-
-def collect_links(numberofrecords = 10):
-    updates = []
-    random_documents = []
-    where_condition = {"is_read":0}
-    pipeline = [{"$match": where_condition}, {"$sample": {"size": numberofrecords}}]
-    random_documents = list(news_url_1.aggregate(pipeline))
-    if len(random_documents) == 0:
-        random_documents = list(news_url_1.aggregate(pipeline))
-    for row in random_documents:
-        updates.append(UpdateOne({"_id": row["_id"]}, {"$set": {"is_read": 1}}))
-
-    # if updates :
-    #     result = news_url_1.bulk_write(updates)
-    return random_documents
-
-def format_field(value):
-    values = value.split("|")
-    result = {}
-    non_blank_index = 1  
-
-    for val in values:
-        val = val.strip()
-        if val:  
-            result[str(non_blank_index)] = val
-            non_blank_index += 1
-
-    return result
-
-def insert_news_details(data):
-    print("Total records received: %d", len(data))
-    bulk_operations = []
-    
-    for obj in data:
-        try:
-            if not obj : continue
-            existing_doc = news_details_1.find_one({"url": obj["url"]})
-            url=obj["url"]
-            regex_pattern = f'^{re.escape(url)}$'
-            doc = news_url_1.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
-            
-            if doc:
-                append_fields = {
-                    "count": doc["count"],
-                    "google_page": doc["google_page"],
-                    "index": doc["index"],
-                    "search_tag": format_field(doc["tag"]),
-                    "search_sector": format_field(doc["sector"])  
-                }
-                obj.update(append_fields)
-                
-            if not existing_doc:
-                bulk_operations.append(pymongo.InsertOne(obj))
-                
-            if existing_doc:
-                bulk_operations.append(UpdateOne(
-                    {"url": obj["url"]},
-                    {"$set": obj},
-                    upsert=True
-                ))
-        except:
-            print("Error processing URL: %s", obj.get("url", "Unknown"))
-            continue
-    try:
-        print("Total numbers of records get: %d", len(bulk_operations))
-        
-        if bulk_operations:
-
-            result = news_details_1.bulk_write(bulk_operations)
-            print("Total inserted records: %d", len(bulk_operations))
-    except BulkWriteError as e:
-        print(e.details)
-        print("An error occurred: %s", e.details)
-
-
-def main():
-    
-    data = []
-    print("Collecting links from MongoDB...",len(collect_links()))
-    for link in collect_links():
-        url = link['url']
-        
-        if "techcrunch" in url:
-            data.append(tech_crunch.scrape(link['url']))
-            
-        elif "theverge" in url:
-            data.append(theverge.scrape(url))
-            
-        elif "digitaltrends" in url:
-            data.append(digitaltrands.scrape(url))
-            
-        elif "yourstory" in url :
-            data.append(your_story.scrape(url))
-            
-        elif "inc42" in url :
-            data.append(inc42.scrape(url))
-            
-            
-    if data :
-        insert_news_details(data)
-        data = []
-        
-        
 if __name__ == "__main__":
-    while True :main()
+    logging.info("[START] Script initialized...")
+    news_scrapper()
+    logging.info("[END] Script completed...")
