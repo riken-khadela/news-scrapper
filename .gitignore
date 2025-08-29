@@ -213,3 +213,5 @@ etc
 others
 *.csv
 *.json
+**test.py**
+oldnews_scrapper
