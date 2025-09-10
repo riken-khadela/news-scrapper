@@ -9,7 +9,10 @@ from pymongo import MongoClient
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(filename)s - %(lineno)d - %(message)s",
-    handlers=[logging.StreamHandler()]
+    handlers=[
+        logging.FileHandler("log/main.log", mode="a"),
+        logging.StreamHandler()
+    ]
 )
 
 MONGO_URI = os.getenv(
