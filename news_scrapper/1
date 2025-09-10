@@ -1,0 +1,92 @@
+2025-08-29 07:38:24,613 [INFO] main.py - 23 - [START] Script initialized...
+2025-08-29 07:38:24,682 [WARNING] settings.py - 95 - ❌ Error fetching https://techfundingnews.com/category/acquisition/: HTTPSConnectionPool(host='techfundingnews.com', port=443): Max retries exceeded with url: /category/acquisition/ (Caused by ProxyError('Cannot connect to proxy.', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fdd3445f550>: Failed to establish a new connection: [Errno 111] Connection refused')))
+2025-08-29 07:38:26,373 [INFO] settings.py - 87 - ✅ Success: https://techfundingnews.com/category/acquisition/ [200]
+2025-08-29 07:38:26,473 [INFO] tech_funding_news.py - 41 - Collected 9 grid items.
+2025-08-29 07:38:26,515 [WARNING] settings.py - 95 - ❌ Error fetching https://techfundingnews.com/category/top-funding-rounds/: HTTPSConnectionPool(host='techfundingnews.com', port=443): Max retries exceeded with url: /category/top-funding-rounds/ (Caused by ProxyError('Cannot connect to proxy.', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fdd32864d30>: Failed to establish a new connection: [Errno 111] Connection refused')))
+2025-08-29 07:38:27,557 [WARNING] settings.py - 95 - ❌ Error fetching https://techfundingnews.com/category/top-funding-rounds/: HTTPSConnectionPool(host='techfundingnews.com', port=443): Max retries exceeded with url: /category/top-funding-rounds/ (Caused by ProxyError('Cannot connect to proxy.', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fdd32865360>: Failed to establish a new connection: [Errno 111] Connection refused')))
+2025-08-29 07:38:29,925 [INFO] settings.py - 87 - ✅ Success: https://techfundingnews.com/category/top-funding-rounds/ [200]
+2025-08-29 07:38:30,012 [INFO] tech_funding_news.py - 41 - Collected 18 grid items.
+2025-08-29 07:38:30,017 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/crowdstrike-acquires-onum-290m-ai-real-time-security/
+2025-08-29 07:38:30,018 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/mindler-ieso-digital-health-uk-20m-nhs-deal/
+2025-08-29 07:38:30,019 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/alcon-to-acquire-staar-surgical-in-1-5b-deal-for-vision-surgery-expansion/
+2025-08-29 07:38:30,020 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/destinus-to-acquire-daedalean-in-225m-deal-to-advance-autonomous-flight-capabilities/
+2025-08-29 07:38:30,020 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/irocket-aims-for-400m-spac-deal-but-no-test-flights-raises-doubts/
+2025-08-29 07:38:30,021 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/sanofi-acquires-uk-based-vicebio-for-up-to-1-6b-to-develop-next-gen-respiratory-vaccine/
+2025-08-29 07:38:30,021 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/lloyds-wants-london-fintech-curve-what-this-means-for-the-future-of-your-wallet/
+2025-08-29 07:38:30,022 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/how-windsurf-was-split-between-openai-google-and-cognition-in-a-billion-dollar-acquisition-deal/
+2025-08-29 07:38:30,023 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/why-coreweave-wants-to-acquire-core-scientific-for-9b-5-things-to-know/
+2025-08-29 07:38:30,023 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/lovable-europe-ai-unicorn-4b-valuation/
+2025-08-29 07:38:30,024 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/galaxy-digital-multicoin-jump-crypto-1b-solana-treasury/
+2025-08-29 07:38:30,024 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/lakestar-265m-continuation-fund-european-vc/
+2025-08-29 07:38:30,025 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/crowdstrike-acquires-onum-290m-ai-real-time-security/
+2025-08-29 07:38:30,025 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/ortivity-raises-200m-to-reinvent-orthopaedic-clinics-europe/
+2025-08-29 07:38:30,026 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/klarna-ipo-valuation-13-billion-september-listing/
+2025-08-29 07:38:30,026 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/organox-terumo-1-5b-exit-uk-medtech/
+2025-08-29 07:38:30,027 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/axelera-ai-funding-europe-chip-race/
+2025-08-29 07:38:30,027 [INFO] tech_funding_news.py - 126 - Skipping (already in DB): https://techfundingnews.com/meta-google-10-billion-cloud-deal/
+2025-08-29 07:38:30,072 [WARNING] settings.py - 95 - ❌ Error fetching https://techcrunch.com/latest/: HTTPSConnectionPool(host='techcrunch.com', port=443): Max retries exceeded with url: /latest/ (Caused by ProxyError('Cannot connect to proxy.', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fdd32865b10>: Failed to establish a new connection: [Errno 111] Connection refused')))
+2025-08-29 07:38:31,588 [INFO] settings.py - 87 - ✅ Success: https://techcrunch.com/latest/ [200]
+2025-08-29 07:38:31,656 [INFO] tech_crunch.py - 38 - Collected 20 grid items.
+2025-08-29 07:38:31,659 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/trump-administrations-deal-is-structured-to-prevent-intel-from-selling-foundry-unit/
+2025-08-29 07:38:31,660 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/anthropic-users-face-a-new-choice-opt-out-or-share-your-data-for-ai-training/
+2025-08-29 07:38:31,660 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/nvidia-google-and-bill-gates-help-commonwealth-fusion-systems-raise-863m/
+2025-08-29 07:38:31,661 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/ai-or-not-will-smiths-crowd-video-is-fresh-cringe-2/
+2025-08-29 07:38:31,662 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/mississippis-age-assurance-law-puts-decentralized-social-networks-to-the-test/
+2025-08-29 07:38:31,662 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/us-manufacturing-investment-stumbles-as-clean-tech-cancellations-pile-up/
+2025-08-29 07:38:31,663 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/threads-tests-a-way-to-share-long-form-text-on-the-platform/
+2025-08-29 07:38:31,663 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/mathgpt-the-cheat-proof-ai-tutor-and-teaching-assistant-expands-to-over-50-institutions/
+2025-08-29 07:38:31,664 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/no-code-website-builder-framer-reaches-2b-valuation/
+2025-08-29 07:38:31,664 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/mark-cubans-war-on-americas-5-trillion-healthcare-machine-they-cant-react-as-quickly/
+2025-08-29 07:38:31,665 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/honors-slim-magic-v5-foldable-is-fun-to-use-minus-the-huge-camera-bump/
+2025-08-29 07:38:31,666 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/investors-are-loving-lovable/
+2025-08-29 07:38:31,666 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/ai-hires-or-human-hustle-inside-the-next-frontier-of-startup-operations-at-techcrunch-disrupt-2025/
+2025-08-29 07:38:31,667 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/how-a-16-year-old-company-is-easing-small-businesses-into-ai/
+2025-08-29 07:38:31,667 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/transunion-says-hackers-stole-4-4-million-customers-personal-information/
+2025-08-29 07:38:31,668 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/get-ready-ev-owners-here-come-the-dongles/
+2025-08-29 07:38:31,668 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/28/more-than-10-european-startups-became-unicorns-this-year/
+2025-08-29 07:38:31,669 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/27/maisa-ai-gets-25m-to-fix-enterprise-ais-95-failure-rate/
+2025-08-29 07:38:31,670 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/27/with-indias-corporate-banking-lagging-decades-behind-consumer-fintech-transbnk-raises-25m-to-bridge-the-gap/
+2025-08-29 07:38:31,670 [INFO] tech_crunch.py - 120 - Skipping (already in DB): https://techcrunch.com/2025/08/27/nvidia-reports-record-sales-as-the-ai-boom-continues/
+2025-08-29 07:38:36,648 [INFO] your_story.py - 40 - Collected 20 grid items.
+2025-08-29 07:38:36,652 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/cci-meity-discuss-digital-mkts-data-protection-competition
+2025-08-29 07:38:36,654 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/vutto-secures-7m-series-a-funding-rtp-global
+2025-08-29 07:38:36,654 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/herstory/2025/08/harish-bina-shah-foundation-partnership-educate-girls-100-crore
+2025-08-29 07:38:38,747 [INFO] your_story.py - 202 - Inserted new article: https://yourstory.com/2025/08/elevation-capital-launches-late-stage-vehicle-to-back-ipo-bound-companies
+2025-08-29 07:38:41,614 [INFO] your_story.py - 202 - Inserted new article: https://yourstory.com/2025/08/ai-focus-solving-real-problems-of-enterprises-devsparks
+2025-08-29 07:38:42,616 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/groww-gets-sebi-nod-for-ipo-to-file-updated-drhp-soon
+2025-08-29 07:38:42,618 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/a99-vignesh-shankar-100m-fund-ancillaries-sunrise-industries
+2025-08-29 07:38:42,618 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/rare-earth-magnets-supply-shortage-on-daily-basis-volumes-hit-tvs
+2025-08-29 07:38:42,619 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/gst-reform-to-offset-growth-drag-from-50-reciprocal-tariff-bmi
+2025-08-29 07:38:42,620 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/hcltech-pearson-india-and-meity-startup-hub
+2025-08-29 07:38:42,621 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/fancode-wind-fancode-shop-focus-core-content-dream11
+2025-08-29 07:38:42,622 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/startup-news-and-updates-daily-roundup-august-28-2025
+2025-08-29 07:38:42,623 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/pixxel-dhruva-space-launch-satellites-onboard-spacexs-rocket
+2025-08-29 07:38:42,624 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/beatovenai-launches-fully-licensed-generative-ai-music-model
+2025-08-29 07:38:42,624 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/flipkart-expands-supply-chain-network-ahead-of-festive-season
+2025-08-29 07:38:42,625 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/nitish-mishra-industries-minister-bihar-success-stories-startups
+2025-08-29 07:38:42,626 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/in-space-five-isro-technologies-indian-firms-indigenisation
+2025-08-29 07:38:42,627 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/transbnk-raises-25m-from-bessemer-8i-accion-and-others
+2025-08-29 07:38:42,627 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/2025/08/science-meets-law-dr-gk-goswami-india-ai-forensic-lab
+2025-08-29 07:38:42,628 [INFO] your_story.py - 169 - Skipping (already in DB): https://yourstory.com/ai-story/how-ai-is-changing-enterprise-apps-vibecoding
+2025-08-29 07:38:42,668 [WARNING] settings.py - 95 - ❌ Error fetching https://inc42.com/buzz/?utm_medium=referral&utm_source=menu: HTTPSConnectionPool(host='inc42.com', port=443): Max retries exceeded with url: /buzz/?utm_medium=referral&utm_source=menu (Caused by ProxyError('Cannot connect to proxy.', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fdd31d83b20>: Failed to establish a new connection: [Errno 111] Connection refused')))
+2025-08-29 07:38:43,798 [WARNING] settings.py - 95 - ❌ Error fetching https://inc42.com/buzz/?utm_medium=referral&utm_source=menu: HTTPSConnectionPool(host='inc42.com', port=443): Max retries exceeded with url: /buzz/?utm_medium=referral&utm_source=menu (Caused by ProxyError('Cannot connect to proxy.', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fdd31de00d0>: Failed to establish a new connection: [Errno 111] Connection refused')))
+2025-08-29 07:38:44,838 [WARNING] settings.py - 95 - ❌ Error fetching https://inc42.com/buzz/?utm_medium=referral&utm_source=menu: HTTPSConnectionPool(host='inc42.com', port=443): Max retries exceeded with url: /buzz/?utm_medium=referral&utm_source=menu (Caused by ProxyError('Cannot connect to proxy.', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fdd31de08e0>: Failed to establish a new connection: [Errno 111] Connection refused')))
+2025-08-29 07:38:48,173 [INFO] settings.py - 87 - ✅ Success: https://inc42.com/buzz/?utm_medium=referral&utm_source=menu [200]
+2025-08-29 07:38:48,280 [INFO] inc42.py - 82 - Collected 12 grid items.
+2025-08-29 07:38:50,760 [INFO] settings.py - 87 - ✅ Success: https://inc42.com/buzz/groww-gets-ipo-green-light-rmg-ban-challenged-more/ [200]
+2025-08-29 07:38:50,900 [INFO] inc42.py - 153 - Inserted new article: https://inc42.com/buzz/groww-gets-ipo-green-light-rmg-ban-challenged-more/
+2025-08-29 07:38:51,903 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/nykaa-allots-equity-shares-worth-inr-12-cr-to-employees/
+2025-08-29 07:38:51,904 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/sebi-clears-groww-ipo/
+2025-08-29 07:38:51,904 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/tvs-motor-expands-ev-lineup-with-launch-of-new-escooter-orbiter/
+2025-08-29 07:38:51,905 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/exclusive-arctus-aerospace-to-raise-3-mn-to-build-uavs-for-earth-observation/
+2025-08-29 07:38:51,905 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/head-digital-works-moves-ktaka-hc-against-real-money-gaming-ban/
+2025-08-29 07:38:51,906 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/dream-sports-owned-fancode-to-shut-sports-merchandise-business/
+2025-08-29 07:38:51,906 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/prosus-in-talks-to-invest-200-mn-in-rapido-at-2-5-bn-valuation-report/
+2025-08-29 07:38:51,907 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/ola-electric-shares-continue-to-rally-zoom-10-to-inr-55-10/
+2025-08-29 07:38:51,907 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/apple-samsung-issue-legal-notices-to-xiaomi-over-ads/
+2025-08-29 07:38:51,908 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/openais-localisation-problem-aye-finances-q1-report-more/
+2025-08-29 07:38:51,909 [INFO] inc42.py - 120 - Skipping (already in DB): https://inc42.com/buzz/api-banking-startup-transbnk-nets-25-mn-series-b-plans-global-expansion/
+2025-08-29 07:38:51,910 [INFO] main.py - 25 - [END] Script completed...
+scrape do URL: http://api.scrape.do/?token=50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269&url=https%3A//yourstory.com/search%3Fpage%3D1%26tag%3DJust%2520In&render=true&waitSelector=.container-results%20li : status code --> 200
+scrape do URL: https://api.scrape.do/?token=50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269&url=https%3A%2F%2Fyourstory.com%2F2025%2F08%2Felevation-capital-launches-late-stage-vehicle-to-back-ipo-bound-companies&render=true : status code --> 200
+scrape do URL: https://api.scrape.do/?token=50612111dbab405ca9c28aacbd4bf0e2dc7d7b4c269&url=https%3A%2F%2Fyourstory.com%2F2025%2F08%2Fai-focus-solving-real-problems-of-enterprises-devsparks&render=true : status code --> 200

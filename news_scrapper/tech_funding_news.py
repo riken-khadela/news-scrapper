@@ -2,7 +2,6 @@ import logging
 import time
 from datetime import datetime
 import json
-from annotated_types import T
 from bs4 import BeautifulSoup
 from requests import RequestException
 from settings import get_request, get_scrape_do_requests, news_details_client, yourstory_scrape_do_requests
@@ -16,7 +15,10 @@ URLS = [
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(filename)s - %(lineno)d - %(message)s",
-    handlers=[logging.StreamHandler()]
+    handlers=[
+        logging.FileHandler("log/main.log", mode="a"),
+        logging.StreamHandler()
+    ]
 )
 
 

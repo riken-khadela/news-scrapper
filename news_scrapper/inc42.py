@@ -12,7 +12,10 @@ URL = "https://inc42.com/buzz/?utm_medium=referral&utm_source=menu"
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(filename)s - %(lineno)d - %(message)s",
-    handlers=[logging.StreamHandler()]
+    handlers=[
+        logging.FileHandler("log/main.log", mode="a"),
+        logging.StreamHandler()
+    ]
 )
 
 
