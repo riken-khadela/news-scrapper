@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 from bs4 import BeautifulSoup
 from requests import RequestException
-from settings import get_request, get_scrape_do_requests, news_details_client, yourstory_scrape_do_requests
+from news_scrapper.settings import get_request, get_scrape_do_requests, news_details_client, yourstory_scrape_do_requests
 from datetime import datetime
 
 URLS = [

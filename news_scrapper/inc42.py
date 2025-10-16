@@ -4,7 +4,7 @@ from datetime import datetime
 
 from bs4 import BeautifulSoup
 from requests import RequestException
-from settings import get_request, news_details_client
+from news_scrapper.settings import get_request, news_details_client
 
 URL = "https://inc42.com/buzz/?utm_medium=referral&utm_source=menu"
 
