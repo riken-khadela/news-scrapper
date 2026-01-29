@@ -214,3 +214,6 @@ etc
 others
 oldnews_scrapper
 **test.py**
+env
+venv
+.venv
