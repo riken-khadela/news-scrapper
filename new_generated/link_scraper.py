@@ -36,24 +36,25 @@ def get_brave_search_results(search_term: str, site_name: str) -> str:
     Returns:
         HTML content of search results page
     """
-    try:
-        headers = {"User-Agent": UserAgent().random}
-        query = f"{search_term} site:{site_name}"
-        params = {"q": query, "tf": "pm"}
-        search_url = f"https://search.brave.com/search?{urllib.parse.urlencode(params)}"
-        
-        response = requests.get(search_url, headers=headers, timeout=10)
-        
-        if response.status_code == 200:
-            logger.info(f"Fetched results for: {search_term} site:{site_name}")
-            return response.text
-        else:
-            logger.warning(f"Failed to fetch results. Status: {response.status_code}")
-            return ""
+    for _ in range(20):
+        try:
+            headers = {"User-Agent": UserAgent().random}
+            query = f"{search_term} site:{site_name}"
+            params = {"q": query, "tf": "pm"}
+            search_url = f"https://search.brave.com/search?{urllib.parse.urlencode(params)}"
             
-    except Exception as e:
-        logger.error(f"Exception during Brave Search: {e}")
-        return ""
+            response = requests.get(search_url, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                logger.info(f"Fetched results for: {search_term} site:{site_name}")
+                return response.text
+            else:
+                logger.warning(f"Failed to fetch results. Status: {response.status_code}")
+                
+        except Exception as e:
+            logger.error(f"Exception during Brave Search: {e}")
+            
+    return ""
 
 def get_next_page_url(html: str) -> str:
     """
