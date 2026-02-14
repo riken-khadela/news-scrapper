@@ -15,7 +15,7 @@ from fake_useragent import UserAgent
 from pymongo import InsertOne
 from pymongo.errors import BulkWriteError
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import threading
+import threading, random
 
 from new_generated.config import (
     TARGET_SITES, SEARCH_KEYWORDS, BATCH_SIZE, 
@@ -24,6 +24,17 @@ from new_generated.config import (
 from new_generated.utils import get_db_connection, setup_logger
 
 logger = setup_logger('link_scraper', 'link_scraper.log')
+
+def proxies():
+    plist = [
+        "37.48.118.90:13082",
+        "83.149.70.159:13082"
+    ]
+    prx = random.choice(plist)
+    return {
+        'http': 'http://' + prx,
+        'https': 'http://' + prx
+    }
 
 def get_brave_search_results(search_term: str, site_name: str) -> str:
     """
@@ -43,7 +54,7 @@ def get_brave_search_results(search_term: str, site_name: str) -> str:
             params = {"q": query, "tf": "pm"}
             search_url = f"https://search.brave.com/search?{urllib.parse.urlencode(params)}"
             
-            response = requests.get(search_url, headers=headers, timeout=10)
+            response = requests.get(search_url, headers=headers, timeout=10, proxies=proxies())
             
             if response.status_code == 200:
                 logger.info(f"Fetched results for: {search_term} site:{site_name}")

@@ -5,6 +5,7 @@ Shared utilities for AI-generated scrapers
 import json
 import logging
 import os
+import random
 import time
 import re
 from datetime import datetime
@@ -59,6 +60,17 @@ def setup_logger(name: str, log_file: str) -> logging.Logger:
     
     return logger
 
+def proxies():
+    plist = [
+        "37.48.118.90:13082",
+        "83.149.70.159:13082"
+    ]
+    prx = random.choice(plist)
+    return {
+        'http': 'http://' + prx,
+        'https': 'http://' + prx
+    }
+
 def make_request(url: str, timeout: int = 10, retries: int = MAX_RETRIES) -> Optional[requests.Response]:
     """
     Make HTTP request with retry logic
@@ -75,7 +87,7 @@ def make_request(url: str, timeout: int = 10, retries: int = MAX_RETRIES) -> Opt
     
     for attempt in range(retries):
         try:
-            response = requests.get(url, headers=headers, timeout=timeout)
+            response = requests.get(url, headers=headers, timeout=timeout, proxies=proxies())
             if response.status_code == 200:
                 return response
             elif response.status_code == 404:
