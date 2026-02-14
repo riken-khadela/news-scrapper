@@ -257,7 +257,7 @@ def main():
     import time
     total_batches = 0
     
-    for _ in range(10000):
+    for _ in range(50):
     # while True:
         logger.info(f"\n{'=' * 80}")
         logger.info(f"Processing batch {total_batches + 1}")

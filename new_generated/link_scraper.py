@@ -310,7 +310,7 @@ def main():
 
 if __name__ == "__main__":
     import time
-    for _ in range(1000):
+    for _ in range(50):
         try:
             main()
         except Exception as e:
