@@ -309,4 +309,12 @@ def main():
     logger.info("=" * 80)
 
 if __name__ == "__main__":
-    main()
+    import time
+    for _ in range(1000):
+        try:
+            main()
+        except Exception as e:
+            logger.error(f"Error in main execution: {e}")
+            time.sleep(5)
+        time.sleep(600)
+    # main()

@@ -254,10 +254,11 @@ def main():
     logger.info("=" * 80)
     logger.info("Starting Details Scraper (Multi-threaded)")
     logger.info("=" * 80)
-    
+    import time
     total_batches = 0
     
-    for _ in range(100):
+    for _ in range(10000):
+    # while True:
         logger.info(f"\n{'=' * 80}")
         logger.info(f"Processing batch {total_batches + 1}")
         logger.info(f"{'=' * 80}")
@@ -269,6 +270,7 @@ def main():
             break
         
         total_batches += 1
+        time.sleep(600)
     
     logger.info("\n" + "=" * 80)
     logger.info(f"Details Scraper Complete")
