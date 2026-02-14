@@ -19,22 +19,22 @@ news_scrapper = masterclient.NEWSSCRAPER
 sector_collection = news_scrapper.keywords
 
 news_scrapper_data = masterclient.NEWSSCRAPERDATA
-news_url_1 = news_scrapper_data.news_url_1
-news_details_1 = news_scrapper_data.news_details_1
+news_url = news_scrapper_data.news_url
+news_details = news_scrapper_data.news_details
 
 def collect_links(numberofrecords = 10):
     updates = []
     random_documents = []
     where_condition = {"is_read":0}
     pipeline = [{"$match": where_condition}, {"$sample": {"size": numberofrecords}}]
-    random_documents = list(news_url_1.aggregate(pipeline))
+    random_documents = list(news_url.aggregate(pipeline))
     if len(random_documents) == 0:
-        random_documents = list(news_url_1.aggregate(pipeline))
+        random_documents = list(news_url.aggregate(pipeline))
     for row in random_documents:
         updates.append(UpdateOne({"_id": row["_id"]}, {"$set": {"is_read": 1}}))
 
     # if updates :
-    #     result = news_url_1.bulk_write(updates)
+    #     result = news_url.bulk_write(updates)
     return random_documents
 
 def format_field(value):
@@ -57,10 +57,10 @@ def insert_news_details(data):
     for obj in data:
         try:
             if not obj : continue
-            existing_doc = news_details_1.find_one({"url": obj["url"]})
+            existing_doc = news_details.find_one({"url": obj["url"]})
             url=obj["url"]
             regex_pattern = f'^{re.escape(url)}$'
-            doc = news_url_1.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
+            doc = news_url.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
             
             if doc:
                 append_fields = {
@@ -89,7 +89,7 @@ def insert_news_details(data):
         
         if bulk_operations:
 
-            result = news_details_1.bulk_write(bulk_operations)
+            result = news_details.bulk_write(bulk_operations)
             print("Total inserted records: %d", len(bulk_operations))
     except BulkWriteError as e:
         print(e.details)

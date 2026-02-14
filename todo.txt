@@ -1,0 +1,35 @@
+I have a monggo db
+Two Db :
+NEWSSCRAPERDATA
+NEW_NEWSSCRAPPERDATA
+
+and i want to have news from only 
+ 1. techcrunch.com
+ 2. inc42.com
+ 3. techfundingnews.com
+ 4. yourstory.com
+
+collections :
+main server collection : new_details
+currently main server news urls collection : news_urls
+
+and there is a two script which is connected to the main.py file
+1. news's link scrapper and 
+2. details scrapper
+
+and there is something got like confusion and also happens a lot of bugs 
+so i want you to have a script in new folder the AI_genrated like 
+1. link scrapper 
+2. details scrapper
+
+
+In link scrapper :
+it will collect the details from the brave search engine and collect the news urls and insert into the news_urls collection
+
+In details scrapper :
+it will collect the details from the news_urls collection and insert into the new_details collection
+
+so i want to do like scrapp all the link from the google using the keywords and also collect all the urls from all the pages within the last year like till 2025-01-01 and then collect it to the new_details_main_urls_only_temp collection from main DB and it the urls and if the url is already present in the url's collection then skip it and otehr wise insert it to the collection
+
+and about the details news scrapper i want to have a script which will collect the urls from the new_details_main_urls_only_temp collection and collect the details from the particular sites and store it into the new_details collection and if the url is already present then it should complete replace the data and if not then insert it and complete replace means like if in our details collection system has the description and then it will use that and replace the data with smart way like in the already collection has any key value and from our data scrappig if it doesnt have then it will use that data from the already existing data and if the url is not present then it will insert it to the collection
+

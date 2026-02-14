@@ -14,8 +14,8 @@ news_scrapper = masterclient.NEWSSCRAPER
 sector_collection = news_scrapper.keywords
 
 news_scrapper_data = masterclient.NEWSSCRAPERDATA
-news_url_1 = news_scrapper_data.news_url_1
-news_details_1 = news_scrapper_data.news_details_1
+news_url = news_scrapper_data.news_url
+news_details = news_scrapper_data.new_details
 
 KEYWORDS = [
     "Funding & Investment",
@@ -39,7 +39,7 @@ def format_field(value):
     return result
 
 def insert_multiple_urls_from_google(documents_list):
-    news_url_1.create_index([("url", 1)], unique=True)
+    news_url.create_index([("url", 1)], unique=True)
     bulk_operations = []
     update_details=[]
     
@@ -47,7 +47,7 @@ def insert_multiple_urls_from_google(documents_list):
     for documents in documents_list:
         for obj in documents:
             try:
-                existing_doc = news_url_1.find_one({"url": obj["url"]})
+                existing_doc = news_url.find_one({"url": obj["url"]})
                 if not existing_doc:
                     bulk_operations.append(pymongo.InsertOne(obj))
                     
@@ -74,7 +74,7 @@ def insert_multiple_urls_from_google(documents_list):
                     
                     url=obj["url"]
                     regex_pattern = f'^{re.escape(obj["url"])}$'
-                    doc = news_details_1.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
+                    doc = news_details.find_one({"url": {"$regex": regex_pattern, "$options": 'i'}})
                     if doc:
                         append_fields = {
                             "search_sector": format_field(Sector),
@@ -88,11 +88,11 @@ def insert_multiple_urls_from_google(documents_list):
     
     try:
         if bulk_operations:
-            result = news_url_1.bulk_write(bulk_operations)
+            result = news_url.bulk_write(bulk_operations)
             logger.info("===>>  Total Inserted Records: %d", result.inserted_count)
        
         if update_details:
-            result = news_details_1.bulk_write(update_details)
+            result = news_details.bulk_write(update_details)
             logger.info("===>>  Total Updated Records: %d", result.modified_count)
 
     except BulkWriteError as e:
@@ -145,7 +145,6 @@ def main():
             crunchbase_ = collect_page_details(sector, keyword, "news.crunchbase.com", LOCATION)
             if crunchbase_ :
                 all_urls.append(crunchbase_)
-            
             
             if all_urls :
                 for _ in range(3):
